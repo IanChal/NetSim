@@ -24,9 +24,23 @@ __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
     Node_Being_Dragged = NULL;
 
 	Coordinator = new TCoordinator(this);
-	Coordinator->Node_Type = NT_COORDINATOR;
-    Coordinator->Cluster_Level = 0;
-    Coordinator->MAC_Address = 0;
+    Coordinator->Node_Body->Parent = this;
+    Coordinator->Node_Body->Left = lvLog->Width;
+    Coordinator->Node_Body->Top = panelTools->Height;
+
+    Coordinator->Node_Range->Parent = this;
+    Coordinator->Node_Range->Left =
+        Coordinator->Node_Body->Left - ((Coordinator->Node_Range->Width - Coordinator->Node_Body->Width) / 2);
+    Coordinator->Node_Range->Top =
+        Coordinator->Node_Body->Top - ((Coordinator->Node_Range->Height - Coordinator->Node_Body->Height) / 2);
+
+    Coordinator->Node_Label->Caption = "0";
+    Coordinator->Node_Label->Left =
+        Coordinator->Node_Body->Left + ((Coordinator->Node_Body->Width - Coordinator->Node_Label->Width) / 2);
+    Coordinator->Node_Label->Top =
+        Coordinator->Node_Body->Top + ((Coordinator->Node_Body->Height - Coordinator->Node_Label->Height) / 2);;
+    Coordinator->Node_Label->Parent = this;
+    Coordinator->Node_Label->BringToFront();
     Node_List->Add(Coordinator);
 
 
@@ -35,62 +49,6 @@ __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
 
 
 
-    // Add the Nodes already on the screen to the list
-	R1 = new TRouter(this);
-	R1->Node_Type = NT_ROUTER;
-    R1->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R1->MAC_Address = 1;
-    R1->Node_Body = shNode1;
-    R1->Tx_Range = 200;
-    Node_List->Add(R1);
-
-	R2 = new TRouter(this);
-	R2->Node_Type = NT_ROUTER;
-    R2->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R2->MAC_Address = 2;
-    R2->Node_Body = shNode2;
-    R2->Tx_Range = 200;
-    Node_List->Add(R2);
-
-	R3 = new TRouter(this);
-	R3->Node_Type = NT_ROUTER;
-    R3->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R3->MAC_Address = 3;
-    R3->Node_Body = shNode3;
-    R3->Tx_Range = 200;
-    Node_List->Add(R3);
-
-	R4 = new TRouter(this);
-	R4->Node_Type = NT_ROUTER;
-    R4->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R4->MAC_Address = 4;
-    R4->Node_Body = shNode4;
-    R4->Tx_Range = 200;
-    Node_List->Add(R4);
-
-	R5 = new TRouter(this);
-	R5->Node_Type = NT_ROUTER;
-    R5->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R5->MAC_Address = 5;
-    R5->Node_Body = shNode5;
-    R5->Tx_Range = 200;
-    Node_List->Add(R5);
-
-	R6 = new TRouter(this);
-	R6->Node_Type = NT_ROUTER;
-    R6->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R6->MAC_Address = 6;
-    R6->Node_Body = shNode6;
-    R6->Tx_Range = 200;
-    Node_List->Add(R6);
-
-	R7 = new TRouter(this);
-	R7->Node_Type = NT_ROUTER;
-    R7->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    R7->MAC_Address = 7;
-    R7->Node_Body = shNode7;
-    R7->Tx_Range = 200;
-    Node_List->Add(R7);
 } // End of constructor
 
 
@@ -111,21 +69,18 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
 	// At power-on, start the network formation.
 	Coordinator->DiscoverChildren();
 }
-//---------------------------------------------------------------------------
 
 
-
-void __fastcall TformMain::shCoordMouseDown(TObject *Sender, TMouseButton /*Button*/, TShiftState /*Shift*/, int X, int Y)
+void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton /*Button*/, TShiftState /*Shift*/, int X, int Y)
 {
     // Find which shape caused the event
     TRfd * node = NULL;
-    TShape * sender = (TShape *)Sender;
     bool found = false;
     sint32 i = 0;
     while ( ! found && (i < Node_List->Count) )
     {
         node = (TRfd *)Node_List->Items[i++];
-        found = ( node->Node_Body == sender );
+        found = ( (node->Node_Body == Sender) || (node->Node_Label == Sender) );
     } // End of Node LIst scan loop
 
     if ( found  )
@@ -135,18 +90,13 @@ void __fastcall TformMain::shCoordMouseDown(TObject *Sender, TMouseButton /*Butt
         Drag_Start_Y = Y;
 
         // Show the extent of the node's transmit range
-        sint32 delta = (node->Tx_Range - DEFAULT_NODE_SIZE) / 2;
-        shTxRange->Width = node->Tx_Range;
-        shTxRange->Height = node->Tx_Range;
-        shTxRange->Left = sender->Left - delta;
-        shTxRange->Top = sender->Top - delta;
-        shTxRange->Visible = true;
-        shTxRange->SendToBack();
+        node->Node_Range->Visible = true;
+        node->Node_Range->SendToBack();
     } // End of Node found in list
-} // End of shCoordMouseDown
+} // End of shNodeMouseDown
 
 
-void __fastcall TformMain::shCoordMouseMove(TObject * /*Sender*/, TShiftState /*Shift*/, int X, int Y)
+void __fastcall TformMain::shNodeMouseMove(TObject * /*Sender*/, TShiftState /*Shift*/, int X, int Y)
 {
     if ( Node_Being_Dragged != NULL )
     {
@@ -170,15 +120,24 @@ void __fastcall TformMain::shCoordMouseMove(TObject * /*Sender*/, TShiftState /*
         {
             Node_Being_Dragged->Node_Body->Top = formMain->ClientHeight - Node_Being_Dragged->Node_Body->Height;
         }
-        shTxRange->Left = Node_Being_Dragged->Node_Body->Left - (Node_Being_Dragged->Tx_Range - DEFAULT_NODE_SIZE) / 2;
-        shTxRange->Top = Node_Being_Dragged->Node_Body->Top - (Node_Being_Dragged->Tx_Range - DEFAULT_NODE_SIZE) / 2;
+        Node_Being_Dragged->Node_Range->Left =
+            Node_Being_Dragged->Node_Body->Left - (Node_Being_Dragged->Tx_Range - DEFAULT_NODE_SIZE) / 2;
+        Node_Being_Dragged->Node_Range->Top =
+            Node_Being_Dragged->Node_Body->Top - (Node_Being_Dragged->Tx_Range - DEFAULT_NODE_SIZE) / 2;
+        Node_Being_Dragged->Node_Label->Left = Node_Being_Dragged->Node_Body->Left +
+            ((Node_Being_Dragged->Node_Body->Width - Node_Being_Dragged->Node_Label->Width) / 2);
+        Node_Being_Dragged->Node_Label->Top = Node_Being_Dragged->Node_Body->Top +
+            ((Node_Being_Dragged->Node_Body->Height - Coordinator->Node_Label->Height) / 2);;
     } // End of null pointer check
-} // End of shCoordMouseMove
+} // End of shNodeMouseMove
 
 
-void __fastcall TformMain::shCoordMouseUp(TObject * /*Sender*/, TMouseButton /*Button*/, TShiftState /*Shift*/, int /*X*/, int /*Y*/)
+void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Button*/, TShiftState /*Shift*/, int /*X*/, int /*Y*/)
 {
-    Node_Being_Dragged = NULL;
-    shTxRange->Visible = false;
-} // End of shCoordMouseUp
+    if ( Node_Being_Dragged != NULL )
+    {
+        Node_Being_Dragged->Node_Range->Visible = false;
+        Node_Being_Dragged = NULL;
+    }
+} // End of shNodeMouseUp
 

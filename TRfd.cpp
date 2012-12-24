@@ -10,8 +10,11 @@
 
 #pragma hdrstop
 
-#include "TRfd.h"
 #include "TRouter.h"
+#include "TformMain.h"
+#include "TRfd.h"
+
+#pragma package(smart_init)
 
 
 /*---------------------------*/
@@ -20,15 +23,35 @@
 
 TRfd::TRfd(TComponent * owner)
 {
-    /* Generate the visual components */
-    Node_Body = new TShape(owner);
-    Node_Range = new TShape(owner);
-    Node_Label = new TLabel(owner);
-
+    // Network stuff
     Node_Type = NT_END_DEVICE;
     Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    Tx_Range = 200;
+    Tx_Range = 150;
 
+    // Visual stuff
+    Node_Body = new TShape(owner);
+    Node_Body->Shape = stCircle;
+    Node_Body->Width = DEFAULT_NODE_SIZE;
+    Node_Body->Height = DEFAULT_NODE_SIZE;
+    Node_Body->OnMouseDown = formMain->shNodeMouseDown;
+    Node_Body->OnMouseMove = formMain->shNodeMouseMove;
+    Node_Body->OnMouseUp = formMain->shNodeMouseUp;
+
+    Node_Range = new TShape(owner);
+    Node_Range->Shape = stCircle;
+    Node_Range->Brush->Style = bsClear;
+    Node_Range->Width = Tx_Range;
+    Node_Range->Height = Tx_Range;
+    Node_Range->Visible = false;
+
+    Node_Label = new TLabel(owner);
+    Node_Label->Font->Name = "Arial";
+    Node_Label->Font->Size = 12;
+    Node_Label->Font->Color = clWhite;
+    Node_Label->Font->Style = TFontStyles() << fsBold;
+    Node_Label->OnMouseDown = formMain->shNodeMouseDown;
+    Node_Label->OnMouseMove = formMain->shNodeMouseMove;
+    Node_Label->OnMouseUp = formMain->shNodeMouseUp;
 } // End of constructor
 
 
@@ -61,9 +84,3 @@ bool handled;
 } // End of ReceiveRadioMsg
 
 
-
-
-
-
-
-#pragma package(smart_init)

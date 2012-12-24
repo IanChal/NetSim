@@ -16,6 +16,7 @@
 #include "TRouter.h"
 #include "TCoordinator.h"
 #include <ComCtrls.hpp>
+#include <Menus.hpp>
 
 
 /*-------------------*/
@@ -36,24 +37,30 @@
 class TformMain : public TForm
 {
 __published:	// IDE-managed Components
-    TShape *shNode2;
-    TShape *shNode3;
-    TShape *shNode1;
-    TShape *shNode4;
-    TShape *shNode5;
-    TShape *shNode6;
-    TShape *shNode7;
     TPanel *panelTools;
     TButton *btnPwr;
-    TShape *shCoord;
-    TShape *shTxRange;
     TCheckBox *CheckBox1;
     TListView *lvLog;
-    TLabel *Label1;
+    TButton *Button1;
+    TButton *Button2;
+    TMainMenu *menuMain;
+    TMenuItem *menuFile;
+    TMenuItem *N1;
+    TMenuItem *menuExit;
+    TMenuItem *menuSave;
+    TMenuItem *menuSaveAs;
+    TMenuItem *menuLoad;
+    TMenuItem *menuNetwork;
+    TMenuItem *menuAddRouter;
+    TMenuItem *menuAddEndDevice;
+    TMenuItem *menuRemoveEndDevice;
+    TMenuItem *menuRemoveRouter;
+    TMenuItem *menuHelp;
+    TMenuItem *About1;
     void __fastcall btnPwrClick(TObject *Sender);
-    void __fastcall shCoordMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
-    void __fastcall shCoordMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
-    void __fastcall shCoordMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+    void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall shNodeMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 
 private:
     // Private Data

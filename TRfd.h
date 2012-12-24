@@ -43,6 +43,10 @@ public:
 
     virtual bool ReceiveRadioMsg(TRadioMsg * msg);
 
+    // Public Events
+    void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+    void __fastcall shNodeMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
 
 }; // End of the TRfd class definition
 
