@@ -12,6 +12,8 @@ object formMain: TformMain
   Menu = menuMain
   OldCreateOrder = False
   Position = poScreenCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 16
   object panelTools: TPanel
@@ -30,29 +32,32 @@ object formMain: TformMain
       TabOrder = 0
       OnClick = btnPwrClick
     end
-    object CheckBox1: TCheckBox
+    object cbShowRange: TCheckBox
       Left = 345
       Top = 15
       Width = 113
       Height = 17
       Caption = 'Show Tx Range'
       TabOrder = 1
+      OnClick = cbShowRangeClick
     end
-    object Button1: TButton
+    object btnNewRouter: TButton
       Left = 8
       Top = 8
       Width = 96
       Height = 24
       Caption = 'New Router ...'
       TabOrder = 2
+      OnClick = btnNewRouterClick
     end
-    object Button2: TButton
+    object btnNewZed: TButton
       Left = 113
       Top = 8
       Width = 96
       Height = 24
       Caption = 'New ZED ...'
       TabOrder = 3
+      OnClick = btnNewZedClick
     end
   end
   object lvLog: TListView

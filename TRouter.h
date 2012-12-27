@@ -24,6 +24,12 @@
 /*---------------------------------*/
 class TRouter : public TRfd
 {
+private:
+    // Private Data
+
+    // Private Methods
+    void CommonConstructorTasks(void);
+
 protected:
     // Protected Data
     TList * Child_List;                     // List of child nodes. Type can be of any type derived from TRfd

@@ -24,6 +24,12 @@
 /*------------------------------*/
 class TRfd
 {
+private:
+    // Private Data
+
+    // Private Methods
+    void CommonConstructor(TComponent * owner);
+
 public:
     // Public Data
     // Visual stuff

@@ -26,10 +26,12 @@ typedef __int64                             sint64;
 /*-------------------*/
 
 #define CLUSTER_LEVEL_UNKNOWN               ((uint8)0xFFu)
-#define DEFAULT_NODE_SIZE                   (0x14u)
+#define DEFAULT_NODE_SIZE                   (0x12u)
 
 #define MAX(x,y)                            ((x)<(y)?(y):(x))
 #define MIN(x,y)                            ((x)<(y)?(x):(y))
+#define INI_FILENAME                        (Application->ExeName + ".ini")
+#define INI_SECTION_NAME                    ("Nodes")
 
 
 /*-----------------*/

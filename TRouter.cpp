@@ -16,11 +16,24 @@
 
 TRouter::TRouter(TComponent * owner) : TRfd(owner)
 {
+    CommonConstructorTasks();
+} // End of constructor
+
+
+void TRouter::CommonConstructorTasks(void)
+{
+    // Network Stuff
     Node_Type = NT_ROUTER;
+
+    // Visual Stuff
+    Node_Body->Pen->Color = clBlue;
+    Node_Body->Brush->Color = clBlue;
+    Node_Range->Pen->Color = clBlue;
+    Node_Label->Color = clBlue;
 
     // Initialise the child list
     Child_List = new TList;
-} // End of constructor
+} // End of CommonConstructorTasks
 
 
 TRouter::~TRouter(void)
@@ -40,9 +53,9 @@ TRadioMsg msg(2);
 
     msg.Timestamp = 0;                      // Put timestamp here
     msg.Recipient = MSG_RECIPIENT_ALL_NODES;
-    msg.Sender = this->MAC_Address;
+    msg.Sender = MAC_Address;
     msg.Msg_Data[0] = MT_JOIN_NETWORK_REQ;
-    msg.Msg_Data[1] = this->Cluster_Level + 1;
+    msg.Msg_Data[1] = Cluster_Level + 1;
 	radioManager.TransmitMsg(&msg, this);
 } // End of DiscoverChildren
 

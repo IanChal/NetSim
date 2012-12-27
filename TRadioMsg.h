@@ -12,7 +12,7 @@
 /* Macro definitions */
 /*-------------------*/
 
-#define MSG_RECIPIENT_ALL_NODES             (0)
+#define MSG_RECIPIENT_ALL_NODES             (0xFFFF)
 
 
 /*-----------------*/

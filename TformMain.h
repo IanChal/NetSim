@@ -39,10 +39,10 @@ class TformMain : public TForm
 __published:	// IDE-managed Components
     TPanel *panelTools;
     TButton *btnPwr;
-    TCheckBox *CheckBox1;
+    TCheckBox *cbShowRange;
     TListView *lvLog;
-    TButton *Button1;
-    TButton *Button2;
+    TButton *btnNewRouter;
+    TButton *btnNewZed;
     TMainMenu *menuMain;
     TMenuItem *menuFile;
     TMenuItem *N1;
@@ -61,6 +61,11 @@ __published:	// IDE-managed Components
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+    void __fastcall btnNewRouterClick(TObject *Sender);
+    void __fastcall cbShowRangeClick(TObject *Sender);
+    void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+    void __fastcall FormCreate(TObject *Sender);
+    void __fastcall btnNewZedClick(TObject *Sender);
 
 private:
     // Private Data
@@ -85,7 +90,6 @@ public:
 	// Public Data
 	TRadioManager Radio_Manager;
     TList * Node_List;                      // List of Node - type can be any class derived from TRfd
-	TCoordinator * Coordinator;             // The network must have a coordinator
 
 	// Public Methods
 
