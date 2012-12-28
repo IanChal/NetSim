@@ -1,7 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-  ClientHeight = 636
+  ClientHeight = 676
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -24,7 +24,7 @@ object formMain: TformMain
     Align = alTop
     TabOrder = 0
     object btnPwr: TButton
-      Left = 232
+      Left = 337
       Top = 8
       Width = 96
       Height = 24
@@ -33,7 +33,7 @@ object formMain: TformMain
       OnClick = btnPwrClick
     end
     object cbShowRange: TCheckBox
-      Left = 345
+      Left = 450
       Top = 15
       Width = 113
       Height = 17
@@ -42,7 +42,7 @@ object formMain: TformMain
       OnClick = cbShowRangeClick
     end
     object btnNewRouter: TButton
-      Left = 8
+      Left = 113
       Top = 8
       Width = 96
       Height = 24
@@ -51,7 +51,7 @@ object formMain: TformMain
       OnClick = btnNewRouterClick
     end
     object btnNewZed: TButton
-      Left = 113
+      Left = 218
       Top = 8
       Width = 96
       Height = 24
@@ -59,13 +59,23 @@ object formMain: TformMain
       TabOrder = 3
       OnClick = btnNewZedClick
     end
+    object btnClearLog: TButton
+      Left = 8
+      Top = 8
+      Width = 96
+      Height = 24
+      Caption = 'Clear Log'
+      TabOrder = 4
+      OnClick = btnClearLogClick
+    end
   end
   object lvLog: TListView
     Left = 0
     Top = 41
     Width = 177
-    Height = 595
+    Height = 635
     Align = alLeft
+    BorderWidth = 1
     Columns = <
       item
         Caption = 'Tx'
@@ -126,5 +136,18 @@ object formMain: TformMain
         Caption = 'About ...'
       end
     end
+  end
+  object menuContextNode: TPopupMenu
+    OnPopup = menuContextNodePopup
+    Left = 240
+    Top = 128
+    object menuDeleteNode: TMenuItem
+      Caption = 'Delete Node'
+      OnClick = menuDeleteNodeClick
+    end
+  end
+  object Timer1: TTimer
+    Left = 320
+    Top = 64
   end
 end

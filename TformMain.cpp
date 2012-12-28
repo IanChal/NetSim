@@ -24,6 +24,7 @@ __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
 {
 	Node_List = new TList;
     Node_Being_Dragged = NULL;
+    Total_Node_Count = 0;
 } // End of constructor
 
 
@@ -40,8 +41,8 @@ TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
             try
             {
                 TNodeType type = TNodeType(ini->ReadInteger(INI_SECTION_NAME, "Type"+IntToStr(i), NT_UNKNOWN));
-                sint32 x_pos = ini->ReadInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), lvLog->Width + (DEFAULT_NODE_SIZE / 2));
-                sint32 y_pos = ini->ReadInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), panelTools->Height + (DEFAULT_NODE_SIZE / 2));
+                sint32 x_pos = ini->ReadInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), lvLog->Width) + (DEFAULT_NODE_SIZE / 2);
+                sint32 y_pos = ini->ReadInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), panelTools->Height) + (DEFAULT_NODE_SIZE / 2);
                 switch (type)
                 {
                     case NT_COORDINATOR:
@@ -53,6 +54,7 @@ TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
                         c->DrawNode(x_pos, y_pos);
                         c->Node_Label->BringToFront();
                         Node_List->Add(c);
+                        Total_Node_Count++;
                         break;
                     }
 
@@ -62,11 +64,12 @@ TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
                         r->Node_Body->Parent = this;
                         r->Node_Range->Parent = this;
                         r->Node_Label->Parent = this;
-                        r->MAC_Address = Node_List->Count;
+                        r->MAC_Address = Total_Node_Count;
                         r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
                         r->Node_Label->BringToFront();
                         r->DrawNode(x_pos, y_pos);
                         Node_List->Add(r);
+                        Total_Node_Count++;
                         break;
                     }
 
@@ -76,11 +79,12 @@ TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
                         r->Node_Body->Parent = this;
                         r->Node_Range->Parent = this;
                         r->Node_Label->Parent = this;
-                        r->MAC_Address = Node_List->Count;
+                        r->MAC_Address = Total_Node_Count;
                         r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
                         r->Node_Label->BringToFront();
                         r->DrawNode(x_pos, y_pos);
                         Node_List->Add(r);
+                        Total_Node_Count++;
                         break;
                     }
 
@@ -106,6 +110,7 @@ TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
         c->DrawNode(lvLog->Width + (c->Node_Body->Width / 2), panelTools->Height + (c->Node_Body->Width / 2));
         c->Node_Label->BringToFront();
         Node_List->Add(c);
+        Total_Node_Count++;
     } // End of empty Node List check
 } // End of FormCreate
 
@@ -146,39 +151,97 @@ __fastcall TformMain::~TformMain(void)
 } // End of destructor
 
 
+void __fastcall TformMain::btnClearLogClick(TObject * /*Sender*/)
+{
+    lvLog->Clear();
+} // End of btnClearLogClick
+
+
+void __fastcall TformMain::btnNewRouterClick(TObject * /*Sender*/)
+{
+    TRouter * r = new TRouter(this);
+    r->Node_Body->Parent = this;
+    r->Node_Range->Parent = this;
+    r->Node_Label->Parent = this;
+    r->MAC_Address = Total_Node_Count;
+    r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+    r->Node_Label->BringToFront();
+    r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
+    Node_List->Add(r);
+    Total_Node_Count++;
+} // End of btnNewRouterClick
+
+
+void __fastcall TformMain::btnNewZedClick(TObject * /*Sender*/)
+{
+    TRfd * r = new TRfd(this);
+    r->Node_Body->Parent = this;
+    r->Node_Range->Parent = this;
+    r->Node_Label->Parent = this;
+    r->MAC_Address = Total_Node_Count;
+    r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+    r->Node_Label->BringToFront();
+    r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
+    Node_List->Add(r);
+    Total_Node_Count++;
+} // End of btnNewZedClick
+
+
+void __fastcall TformMain::cbShowRangeClick(TObject * /*Sender*/)
+{
+    for ( sint32 i = 0; i < Node_List->Count; i++ )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        node->DrawNode(node->Node_Body->Left + (node->Node_Body->Width / 2),
+                       node->Node_Body->Top + (node->Node_Body->Height / 2));
+        node->Node_Range->Visible = cbShowRange->Checked;
+    }
+} // End of cbShowRangeClick
+
+
 void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
 {
     if ( Node_List->Count > 0 )
     {
         // At power-on, start the network formation
         TCoordinator * coord = (TCoordinator *)Node_List->First();
+
+        // Start by disconnecting all nodes from the network
+        for ( sint32 i = 1; i < Node_List->Count; i++ )
+        {
+            TRfd * node = (TRfd *)Node_List->Items[i];
+            node->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
+        }
 	    coord->DiscoverChildren();
-    }
+    } // End of empty Node List check
 } // End of btnPwrClick
 
 
-void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton /*Button*/, TShiftState /*Shift*/, int X, int Y)
+void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState /*Shift*/, int X, int Y)
 {
-    // Find which shape caused the event
-    TRfd * node = NULL;
-    bool found = false;
-    sint32 i = 0;
-    while ( ! found && (i < Node_List->Count) )
+    if ( Button == mbLeft )
     {
-        node = (TRfd *)Node_List->Items[i++];
-        found = ( (node->Node_Body == Sender) || (node->Node_Label == Sender) );
-    } // End of Node LIst scan loop
+        // Find which shape caused the event
+        TRfd * node = NULL;
+        bool found = false;
+        sint32 i = 0;
+        while ( ! found && (i < Node_List->Count) )
+        {
+            node = (TRfd *)Node_List->Items[i++];
+            found = ( (node->Node_Body == Sender) || (node->Node_Label == Sender) );
+        } // End of Node LIst scan loop
 
-    if ( found  )
-    {
-        Node_Being_Dragged = node;
-        Drag_Start_X = X;
-        Drag_Start_Y = Y;
+        if ( found  )
+        {
+            Node_Being_Dragged = node;
+            Drag_Start_X = X;
+            Drag_Start_Y = Y;
 
-        // Show the extent of the node's transmit range
-        node->Node_Range->Visible = true;
-        node->Node_Range->SendToBack();
-    } // End of Node found in list
+            // Show the extent of the node's transmit range
+            node->Node_Range->Visible = true;
+            node->Node_Range->SendToBack();
+        } // End of Node found in list
+    } // End of left-button check
 } // End of shNodeMouseDown
 
 
@@ -207,10 +270,7 @@ void __fastcall TformMain::shNodeMouseMove(TObject * /*Sender*/, TShiftState /*S
         {
             n->Node_Body->Top = formMain->ClientHeight - n->Node_Body->Height;
         }
-        n->Node_Range->Left = n->Node_Body->Left - (n->Tx_Range - DEFAULT_NODE_SIZE) / 2;
-        n->Node_Range->Top = n->Node_Body->Top - (n->Tx_Range - DEFAULT_NODE_SIZE) / 2;
-        n->Node_Label->Left = n->Node_Body->Left + ((n->Node_Body->Width - n->Node_Label->Width) / 2);
-        n->Node_Label->Top = n->Node_Body->Top + ((n->Node_Body->Height - n->Node_Label->Height) / 2);
+        n->DrawNode(n->Node_Body->Left + (n->Node_Body->Width / 2), n->Node_Body->Top + (n->Node_Body->Height / 2));
     } // End of null pointer check
 } // End of shNodeMouseMove
 
@@ -224,39 +284,45 @@ void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Bu
     }
 } // End of shNodeMouseUp
 
-void __fastcall TformMain::btnNewRouterClick(TObject * /*Sender*/)
+
+void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
 {
-    TRouter * r = new TRouter(this);
-    r->Node_Body->Parent = this;
-    r->Node_Range->Parent = this;
-    r->Node_Label->Parent = this;
-    r->MAC_Address = Node_List->Count;
-    r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-    r->Node_Label->BringToFront();
-    r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
-    Node_List->Add(r);
-} // End of btnNewRouterClick
+    sint32 i = FindNodeIndex(menuContextNode->PopupComponent);
+    menuDeleteNode->Enabled = ( i > 0 );
+} // End of menuContextNodePopup
 
 
-void __fastcall TformMain::cbShowRangeClick(TObject * /*Sender*/)
+void __fastcall TformMain::menuDeleteNodeClick(TObject */*Sender*/)
 {
-    for ( sint32 i = 0; i < Node_List->Count; i++ )
+    sint32 i = FindNodeIndex(menuContextNode->PopupComponent);
+    if ( i > 0 )
     {
         TRfd * node = (TRfd *)Node_List->Items[i];
-        node->Node_Range->Visible = cbShowRange->Checked;
+        delete node;
+        Node_List->Delete(i);
     }
-} // End of cbShowRangeClick
+} // End of menuDeleteNodeClick
 
-void __fastcall TformMain::btnNewZedClick(TObject *Sender)
+
+sint32 TformMain::FindNodeIndex(TObject * sender)
 {
-    TRfd * r = new TRfd(this);
-    r->Node_Body->Parent = this;
-    r->Node_Range->Parent = this;
-    r->Node_Label->Parent = this;
-    r->MAC_Address = Node_List->Count;
-    r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-    r->Node_Label->BringToFront();
-    r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
-    Node_List->Add(r);
-} // End of btnNewZedClick
+    sint32 node_index = -1;
+    sint32 i = 0;
+    while ( (node_index < 0) && (i < Node_List->Count) )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        if ( node->Node_Label == sender )
+        {
+            node_index = i;
+        }
+        else
+        {
+            i++;
+        }
+    } // End of Node List scan loop
+
+    return node_index;
+} // End of FindSender
+
+
 

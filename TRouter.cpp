@@ -49,13 +49,12 @@ TRouter::~TRouter(void)
 
 void TRouter::DiscoverChildren(void)
 {
-TRadioMsg msg(2);
+TRadioMsg msg(1);
 
     msg.Timestamp = 0;                      // Put timestamp here
     msg.Recipient = MSG_RECIPIENT_ALL_NODES;
     msg.Sender = MAC_Address;
-    msg.Msg_Data[0] = MT_JOIN_NETWORK_REQ;
-    msg.Msg_Data[1] = Cluster_Level + 1;
+    msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_REQ;
 	radioManager.TransmitMsg(&msg, this);
 } // End of DiscoverChildren
 

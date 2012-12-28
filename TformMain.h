@@ -57,6 +57,10 @@ __published:	// IDE-managed Components
     TMenuItem *menuRemoveRouter;
     TMenuItem *menuHelp;
     TMenuItem *About1;
+    TPopupMenu *menuContextNode;
+    TMenuItem *menuDeleteNode;
+    TTimer *Timer1;
+    TButton *btnClearLog;
     void __fastcall btnPwrClick(TObject *Sender);
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
@@ -66,18 +70,13 @@ __published:	// IDE-managed Components
     void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
     void __fastcall FormCreate(TObject *Sender);
     void __fastcall btnNewZedClick(TObject *Sender);
+    void __fastcall menuContextNodePopup(TObject *Sender);
+    void __fastcall menuDeleteNodeClick(TObject *Sender);
+    void __fastcall btnClearLogClick(TObject *Sender);
 
 private:
     // Private Data
-
-	// Add some fixed nodes as a temporary measure
-	TRouter * R1;
-	TRouter * R2;
-	TRouter * R3;
-	TRouter * R4;
-	TRouter * R5;
-	TRouter * R6;
-	TRouter * R7;
+    sint32 Total_Node_Count;
 
     // Node-dragging stuff
     TRfd * Node_Being_Dragged;
@@ -85,6 +84,7 @@ private:
     sint32 Drag_Start_Y;
 
 	// Private Methods
+    sint32 FindNodeIndex(TObject * sender);
 
 public:
 	// Public Data

@@ -35,6 +35,7 @@ public:
     // Public Methods
     TRadioMsg(uint32 msg_len);
     ~TRadioMsg(void);
+    TRadioMsg(TRadioMsg &ref);
 }; // End of TRadioMsg class definition
 
 #endif

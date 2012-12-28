@@ -32,7 +32,7 @@ void TRfd::CommonConstructor(TComponent * owner)
     // Network stuff
     Node_Type = NT_END_DEVICE;
     Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
-    Tx_Range = 150;
+    Tx_Range = 80;
     MAC_Address = 0;
 
     // Visual stuff
@@ -50,8 +50,8 @@ void TRfd::CommonConstructor(TComponent * owner)
     Node_Range->Shape = stCircle;
     Node_Range->Brush->Style = bsClear;
     Node_Range->Pen->Color = clRed;
-    Node_Range->Width = Tx_Range;
-    Node_Range->Height = Tx_Range;
+    Node_Range->Width = Tx_Range * 2;
+    Node_Range->Height = Tx_Range * 2;
     Node_Range->Visible = false;
 
     Node_Label = new TLabel(owner);
@@ -64,13 +64,38 @@ void TRfd::CommonConstructor(TComponent * owner)
     Node_Label->OnMouseDown = formMain->shNodeMouseDown;
     Node_Label->OnMouseMove = formMain->shNodeMouseMove;
     Node_Label->OnMouseUp = formMain->shNodeMouseUp;
+    Node_Label->PopupMenu = formMain->menuContextNode;
+
+    Msg_Timer = new TTimer(owner);
+    Msg_Timer->Enabled = false;
+    Msg_Timer->OnTimer = Msg_TimerTimer;
+
+    Msg_Buffer = new TList;
 } // End of CommonConstructor
+
+
+TRfd::~TRfd(void)
+{
+    delete Node_Body;
+    delete Node_Range;
+    delete Node_Label;
+    while ( Msg_Buffer->Count > 0 )
+    {
+        TRadioMsg * msg = (TRadioMsg *)Msg_Buffer->First();
+        delete msg;
+        Msg_Buffer->Delete(0);
+    }
+    delete Msg_Buffer;
+} // End of destructor
+
 
 void TRfd::DrawNode(sint32 x, sint32 y)
 {
     // x,y marks the midpoint of the Node Body circle and the Node Range circle
     Node_Body->Left = x - (Node_Body->Width / 2);
     Node_Body->Top = y - (Node_Body->Height / 2);
+    Node_Range->Width = Tx_Range * 2;
+    Node_Range->Height = Tx_Range * 2;
     Node_Range->Left = x - (Node_Range->Width / 2);
     Node_Range->Top = y - (Node_Range->Height / 2);
     Node_Label->Left = Node_Body->Left + ((Node_Body->Width - Node_Label->Width) / 2);
@@ -78,26 +103,81 @@ void TRfd::DrawNode(sint32 x, sint32 y)
 } // End of DrawNode
 
 
-bool TRfd::ReceiveRadioMsg(TRadioMsg * msg)
+void __fastcall TRfd::Msg_TimerTimer(TObject * /*Sender*/)
 {
-bool handled;
+    Msg_Timer->Enabled = false;
 
-    switch(msg->Msg_Data[0])
+    while ( Msg_Buffer->Count > 0 )
     {
-        case MT_JOIN_NETWORK_REQ:
-            if ( (this->Node_Type == NT_ROUTER) && (this->Cluster_Level == CLUSTER_LEVEL_UNKNOWN) )
+        // Handle the received message(s)
+        TRadioMsg * rx_msg = (TRadioMsg *)Msg_Buffer->First();
+        switch(rx_msg->Msg_Data[0])
+        {
+            case MT_JOIN_MY_NETWORK_REQ:
             {
-                // This node is currently not connected to the network, so accept the request
-                this->Cluster_Level = msg->Msg_Data[1];
+                if ( Cluster_Level == CLUSTER_LEVEL_UNKNOWN )
+                {
+                    // This node is currently not connected to the network.
+                    // So respond with the expected response
+                    TRadioMsg resp_msg(1);
+                    resp_msg.Timestamp = 0;                      // Put timestamp here
+                    resp_msg.Recipient = rx_msg->Sender;
+                    resp_msg.Sender = MAC_Address;
+                    resp_msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_RESP;
+	                radioManager.TransmitMsg(&resp_msg, this);
+                }
+                break;
             }
-            break;
 
-        default:
-            handled = false;
-            break;
-    } // End of switch statement
 
-    return handled;
-} // End of ReceiveRadioMsg
+            case MT_JOIN_MY_NETWORK_RESP:
+            {
+                // A node wants to join as a child
+                // So respond back with a request to set the node's cluster level
+                TRadioMsg resp_msg(2);
+                resp_msg.Timestamp = 0;                      // Put timestamp here
+                resp_msg.Recipient = rx_msg->Sender;
+                resp_msg.Sender = MAC_Address;
+                resp_msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_REQ;
+                resp_msg.Msg_Data[1] = Cluster_Level + 1;
+                radioManager.TransmitMsg(&resp_msg, this);
+                break;
+            }
 
+
+            case MT_SET_CLUSTER_LEVEL_REQ:
+            {
+                // Set the node's cluster level as instructed
+                if ( Cluster_Level == CLUSTER_LEVEL_UNKNOWN )
+                {
+                    Cluster_Level = rx_msg->Msg_Data[1];
+
+                    // Now send the response to say this node is now in the network
+                    TRadioMsg resp_msg(1);
+                    resp_msg.Timestamp = 0;                      // Put timestamp here
+                    resp_msg.Recipient = rx_msg->Sender;
+                    resp_msg.Sender = MAC_Address;
+                    resp_msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_RESP;
+	                radioManager.TransmitMsg(&resp_msg, this);
+                }
+                break;
+            }
+
+
+            case MT_SET_CLUSTER_LEVEL_RESP:
+            {
+                break;
+            }
+
+
+            default:
+                // Just ignore unrecognised messages
+                break;
+        } // End of switch statement
+
+        // Remove the massage from the buffer
+        delete rx_msg;
+        Msg_Buffer->Delete(0);
+    } // End of Message Buffer empty check
+} // End of Msg_TimerTimer
 

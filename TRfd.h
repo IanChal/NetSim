@@ -24,6 +24,10 @@
 /*------------------------------*/
 class TRfd
 {
+
+protected:
+    void __fastcall Msg_TimerTimer(TObject *Sender);
+
 private:
     // Private Data
 
@@ -36,18 +40,19 @@ public:
     TShape * Node_Body;
     TShape * Node_Range;
     TLabel * Node_Label;
+    TTimer * Msg_Timer;
+    TList * Msg_Buffer;                     // List of TRadioMsg pointers
 
     // Network stuff
     sint64 MAC_Address;
     TNodeType Node_Type;
     uint8 Cluster_Level;
-    uint32 Tx_Range;
+    sint32 Tx_Range;
 
     // Public Methods
     TRfd(TComponent * owner);
+    ~TRfd(void);
     void DrawNode(sint32 x, sint32 y);
-
-    virtual bool ReceiveRadioMsg(TRadioMsg * msg);
 
     // Public Events
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);

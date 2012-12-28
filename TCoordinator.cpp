@@ -19,6 +19,7 @@ TCoordinator::TCoordinator(TComponent * owner) : TRouter(owner)
     // Network Stuff
     Node_Type = NT_COORDINATOR;
     Cluster_Level = 0;
+    Tx_Range = 100;
 
     // Visual Stuff
     Node_Body->Pen->Color = clGreen;
