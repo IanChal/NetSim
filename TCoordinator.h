@@ -29,6 +29,7 @@ public:
 
     // Public Methods
     TCoordinator(TComponent * owner);
+    void DiscoverChildren(void);
 }; // End of TCoordinator class definition
 
 

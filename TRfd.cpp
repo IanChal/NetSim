@@ -34,6 +34,8 @@ void TRfd::CommonConstructor(TComponent * owner)
     Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
     Tx_Range = 80;
     MAC_Address = 0;
+    Parent_Node = NULL;
+    Node_State = NS_NODE_IDLE;
 
     // Visual stuff
     Node_Body = new TShape(owner);
@@ -103,81 +105,111 @@ void TRfd::DrawNode(sint32 x, sint32 y)
 } // End of DrawNode
 
 
+/*-----------------------------------------------------------------------------------*/
+/* This timer emulates a periodic(?) reading of a message buffer.                    */
+/* Each time this timer triggers, all messages in the 'buffer' are read and executed */
+/*-----------------------------------------------------------------------------------*/
 void __fastcall TRfd::Msg_TimerTimer(TObject * /*Sender*/)
 {
     Msg_Timer->Enabled = false;
 
-    while ( Msg_Buffer->Count > 0 )
-    {
-        // Handle the received message(s)
-        TRadioMsg * rx_msg = (TRadioMsg *)Msg_Buffer->First();
-        switch(rx_msg->Msg_Data[0])
-        {
-            case MT_JOIN_MY_NETWORK_REQ:
-            {
-                if ( Cluster_Level == CLUSTER_LEVEL_UNKNOWN )
-                {
-                    // This node is currently not connected to the network.
-                    // So respond with the expected response
-                    TRadioMsg resp_msg(1);
-                    resp_msg.Timestamp = 0;                      // Put timestamp here
-                    resp_msg.Recipient = rx_msg->Sender;
-                    resp_msg.Sender = MAC_Address;
-                    resp_msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_RESP;
-	                radioManager.TransmitMsg(&resp_msg, this);
-                }
-                break;
-            }
-
-
-            case MT_JOIN_MY_NETWORK_RESP:
-            {
-                // A node wants to join as a child
-                // So respond back with a request to set the node's cluster level
-                TRadioMsg resp_msg(2);
-                resp_msg.Timestamp = 0;                      // Put timestamp here
-                resp_msg.Recipient = rx_msg->Sender;
-                resp_msg.Sender = MAC_Address;
-                resp_msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_REQ;
-                resp_msg.Msg_Data[1] = Cluster_Level + 1;
-                radioManager.TransmitMsg(&resp_msg, this);
-                break;
-            }
-
-
-            case MT_SET_CLUSTER_LEVEL_REQ:
-            {
-                // Set the node's cluster level as instructed
-                if ( Cluster_Level == CLUSTER_LEVEL_UNKNOWN )
-                {
-                    Cluster_Level = rx_msg->Msg_Data[1];
-
-                    // Now send the response to say this node is now in the network
-                    TRadioMsg resp_msg(1);
-                    resp_msg.Timestamp = 0;                      // Put timestamp here
-                    resp_msg.Recipient = rx_msg->Sender;
-                    resp_msg.Sender = MAC_Address;
-                    resp_msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_RESP;
-	                radioManager.TransmitMsg(&resp_msg, this);
-                }
-                break;
-            }
-
-
-            case MT_SET_CLUSTER_LEVEL_RESP:
-            {
-                break;
-            }
-
-
-            default:
-                // Just ignore unrecognised messages
-                break;
-        } // End of switch statement
-
-        // Remove the massage from the buffer
-        delete rx_msg;
-        Msg_Buffer->Delete(0);
-    } // End of Message Buffer empty check
 } // End of Msg_TimerTimer
+
+
+void TRfd::DiscoverDescendants(void)
+{
+    // An RFD cannot have any descendants, so just send back acknowledgments to say 'done'
+} // End of DiscoverDescendants
+
+
+void TRfd::SendJoinMyNetworkRequest(TRfd * target_node)
+{
+    // The node is sending a request (should be to all nodes) to join the network as a child of this node
+    TRadioMsg msg(2);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_REQ;
+    msg.Msg_Data[1] = this->Cluster_Level + 1;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendJoinMyNetworkRequest
+
+
+void TRfd::SendJoinMyNetworkAck(TRfd * target_node)
+{
+    // This node is agreeing to join the network as a child of the node that sent the request message
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_ACK;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendJoinMyNetworkAck
+
+
+void TRfd::SendSetClusterLevelCommand(TRfd * target_node)
+{
+    // Send the target node a command to set its cluster level
+    TRadioMsg msg(2);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_CMD;
+    msg.Msg_Data[1] = Cluster_Level + 1;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendSetClusterLevelCommand
+
+
+void TRfd::SendSetClusterLevelAck(TRfd * target_node)
+{
+    // Acknowledge the Set Cluster Level command
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_ACK;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendSetClusterLevelAck
+
+
+void TRfd::SendDiscoverDescendantsCommand(TRfd * target_node)
+{
+    // Send the target node a command to disciver all of its Descendant nodes
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_DISCOVER_DESCENDANTS_CMD;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendDiscoverDescendantsCommand
+
+
+void TRfd::SendDiscoverDescendantsAck(TRfd * target_node)
+{
+    // Send an Ack to tell the target node (should be parent) that the Discover Descendants message has been accepted
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_DISCOVER_DESCENDANTS_ACK;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendDiscoverDescendantsAck
+
+
+void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node)
+{
+    // Tell the target node (should be parent) that this node has finished discovering all it's descendants
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_DESCENDANT_DISCOVERY_DONE_MSG;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendDescendantDiscoveryCompleteMsg
+
+
+void TRfd::SendDescendantDiscoveryCompleteAck(TRfd * target_node)
+{
+    // Acknowledge the Descendant Discovery Complete message
+    TRadioMsg msg(1);
+    msg.Recipient_Node = target_node;
+    msg.Sender_Node = this;
+    msg.Msg_Data[0] = MT_DESCENDANT_DISCOVERY_DONE_ACK;
+    radioManager.TransmitMsg(&msg, this);
+} // End of SendDescendantDiscoveryCompleteAck
+
+
 

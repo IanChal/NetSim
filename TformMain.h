@@ -73,10 +73,12 @@ __published:	// IDE-managed Components
     void __fastcall menuContextNodePopup(TObject *Sender);
     void __fastcall menuDeleteNodeClick(TObject *Sender);
     void __fastcall btnClearLogClick(TObject *Sender);
+    void __fastcall FormPaint(TObject *Sender);
 
 private:
     // Private Data
     sint32 Total_Node_Count;
+    bool Power_Is_On;
 
     // Node-dragging stuff
     TRfd * Node_Being_Dragged;

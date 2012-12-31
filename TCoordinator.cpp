@@ -28,3 +28,9 @@ TCoordinator::TCoordinator(TComponent * owner) : TRouter(owner)
     Node_Label->Color = clGreen;
 } // End of constructor
 
+
+void TCoordinator::DiscoverChildren(void)
+{
+    Retry_Counter = 0;
+
+} // End of DiscoverChildren

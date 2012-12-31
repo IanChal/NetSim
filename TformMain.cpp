@@ -25,6 +25,7 @@ __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
 	Node_List = new TList;
     Node_Being_Dragged = NULL;
     Total_Node_Count = 0;
+    Power_Is_On = false;
 } // End of constructor
 
 
@@ -201,25 +202,44 @@ void __fastcall TformMain::cbShowRangeClick(TObject * /*Sender*/)
 
 void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
 {
-    if ( Node_List->Count > 0 )
+    if ( Power_Is_On )
     {
-        // At power-on, start the network formation
-        TCoordinator * coord = (TCoordinator *)Node_List->First();
-
-        // Start by disconnecting all nodes from the network
-        for ( sint32 i = 1; i < Node_List->Count; i++ )
+        // Switch off the power to the nextwork
+        Power_Is_On = false;
+        btnPwr->Caption = "Power On";
+        for ( sint32 i = 0; i < Node_List->Count; i++ )
         {
             TRfd * node = (TRfd *)Node_List->Items[i];
             node->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
+            node->Parent_Node = NULL;
+            if ( (node->Node_Type == NT_ROUTER) || (node->Node_Type == NT_COORDINATOR) )
+            {
+                TRouter * router_node = (TRouter *)node;
+                router_node->Child_List->Clear();
+            }
         }
-	    coord->DiscoverChildren();
-    } // End of empty Node List check
+        formMain->Repaint();
+    } // End of power is currently on
+    else
+    {
+        // Switch on the power to the network
+        if ( Node_List->Count > 0 )
+        {
+            // At power-on, start the network formation
+            TCoordinator * coord = (TCoordinator *)Node_List->First();
+            Power_Is_On = true;
+            btnPwr->Caption = "Power Off";
+            coord->Cluster_Level = 0;
+        } // End of empty Node List check
+    } // End of power is currently off
+    btnNewRouter->Enabled = ! Power_Is_On;
+    btnNewZed->Enabled = ! Power_Is_On;
 } // End of btnPwrClick
 
 
 void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState /*Shift*/, int X, int Y)
 {
-    if ( Button == mbLeft )
+    if ( ! Power_Is_On && (Button == mbLeft) )
     {
         // Find which shape caused the event
         TRfd * node = NULL;
@@ -325,4 +345,25 @@ sint32 TformMain::FindNodeIndex(TObject * sender)
 } // End of FindSender
 
 
+
+void __fastcall TformMain::FormPaint(TObject * /*Sender*/)
+{
+    for ( sint32 i = 0; i < Node_List->Count; i++ )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        if ( node->Parent_Node != NULL )
+        {
+            // Draw a line from the child to the parent to vosualise the relatinoship
+            sint32 child_x = SHAPE_CENTRE_X(node->Node_Body);
+            sint32 child_y = SHAPE_CENTRE_Y(node->Node_Body);
+            sint32 parent_x = SHAPE_CENTRE_X(node->Parent_Node->Node_Body);
+            sint32 parent_y = SHAPE_CENTRE_Y(node->Parent_Node->Node_Body);
+            formMain->Canvas->Pen->Width = 1;
+            formMain->Canvas->Pen->Color = node->Parent_Node->Node_Body->Pen->Color;
+            formMain->Canvas->Pen->Style = psDot;
+            formMain->Canvas->MoveTo(child_x, child_y);
+            formMain->Canvas->LineTo(parent_x, parent_y);
+        }
+    } // End of node list scan loop
+} // End of FormPaint
 

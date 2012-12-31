@@ -30,6 +30,8 @@ typedef __int64                             sint64;
 
 #define MAX(x,y)                            ((x)<(y)?(y):(x))
 #define MIN(x,y)                            ((x)<(y)?(x):(y))
+#define SHAPE_CENTRE_X(s)                   ((s)->Left + ((s)->Width/2))
+#define SHAPE_CENTRE_Y(s)                   ((s)->Top + ((s)->Height/2))
 #define INI_FILENAME                        (Application->ExeName + ".ini")
 #define INI_SECTION_NAME                    ("Nodes")
 
@@ -49,9 +51,13 @@ typedef enum
 typedef enum
 {
     MT_JOIN_MY_NETWORK_REQ,
-    MT_JOIN_MY_NETWORK_RESP,
-    MT_SET_CLUSTER_LEVEL_REQ,
-    MT_SET_CLUSTER_LEVEL_RESP,
+    MT_JOIN_MY_NETWORK_ACK,
+    MT_SET_CLUSTER_LEVEL_CMD,
+    MT_SET_CLUSTER_LEVEL_ACK,
+    MT_DISCOVER_DESCENDANTS_CMD,
+    MT_DISCOVER_DESCENDANTS_ACK,
+    MT_DESCENDANT_DISCOVERY_DONE_MSG,
+    MT_DESCENDANT_DISCOVERY_DONE_ACK
 } TRadioMsgType;
 
 

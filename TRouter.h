@@ -28,23 +28,26 @@ private:
     // Private Data
 
     // Private Methods
-    void CommonConstructorTasks(void);
+    void CommonConstructorTasks(TComponent * owner);
+
 
 protected:
     // Protected Data
-    TList * Child_List;                     // List of child nodes. Type can be of any type derived from TRfd
+    TTimer * Msg_Timeout_Timer;
+    uint8 Retry_Counter;
 
     // Protected Methods
-    
+    void __fastcall Msg_Timeout_TimerTimer(TObject *Sender);
 
 public:
     // Public Data
+    bool Child_Added;
+    TList * Child_List;                     // List of child nodes. Type can be of any type derived from TRfd
+    sint32 Child_List_Index;
 
     // Public Methods
     TRouter(TComponent * owner);
     ~TRouter(void);
-    void DiscoverChildren(void);
-
 }; // End of the TRouter class definition
 
 

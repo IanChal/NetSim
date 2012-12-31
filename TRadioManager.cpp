@@ -16,8 +16,10 @@ TRadioManager radioManager;
 void TRadioManager::TransmitMsg(TRadioMsg * msg, TRfd * sender)
 {
     TListItem * new_item = formMain->lvLog->Items->Add();
-    new_item->Caption = IntToHex(msg->Sender, 4);
-    new_item->SubItems->Add(IntToHex(msg->Recipient, 4));
+    new_item->Caption = IntToHex(msg->Sender_Node->MAC_Address, 4);
+
+    new_item->SubItems->Add( (msg->Recipient_Node == MSG_RECIPIENT_ALL_NODES) ?
+                              (AnsiString)"<ALL>" : (AnsiString)IntToHex(msg->Recipient_Node->MAC_Address, 4) );
     AnsiString data;
     for ( sint32 i = 0; i < msg->Msg_Length; i++ )
     {
@@ -31,8 +33,8 @@ void TRadioManager::TransmitMsg(TRadioMsg * msg, TRfd * sender)
     for (sint32 i = 0; i < formMain->Node_List->Count; i++ )
     {
         TRfd * rx_node = (TRfd *)formMain->Node_List->Items[i];
-        if ( (rx_node->MAC_Address != msg->Sender) &&
-             ((msg->Recipient == rx_node->MAC_Address) || (msg->Recipient == MSG_RECIPIENT_ALL_NODES)) )
+        if ( (rx_node->MAC_Address != msg->Sender_Node->MAC_Address) &&
+             ((msg->Recipient_Node == rx_node) || (msg->Recipient_Node == MSG_RECIPIENT_ALL_NODES)) )
         {
             // The address matches. Now check the range
             const sint32 rx_node_pos_x = rx_node->Node_Body->Left + (rx_node->Node_Body->Width / 2);

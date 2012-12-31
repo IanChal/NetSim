@@ -1,7 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-  ClientHeight = 676
+  ClientHeight = 610
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -14,6 +14,7 @@ object formMain: TformMain
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
+  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 16
   object panelTools: TPanel
@@ -73,9 +74,8 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
-    Height = 635
+    Height = 569
     Align = alLeft
-    BorderWidth = 1
     Columns = <
       item
         Caption = 'Tx'
@@ -88,9 +88,15 @@ object formMain: TformMain
         Width = 500
       end>
     ColumnClick = False
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Arial'
+    Font.Style = []
     GridLines = True
     ReadOnly = True
     RowSelect = True
+    ParentFont = False
     TabOrder = 1
     ViewStyle = vsReport
   end

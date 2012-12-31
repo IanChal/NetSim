@@ -11,6 +11,7 @@ TRadioMsg::TRadioMsg(uint32 msg_len)
 {
     Msg_Length = msg_len;
     Msg_Data = new uint8[msg_len];
+    Timestamp = 0;                          // TODO: Put correct timestamp here
 } // End of constructor
 
 
@@ -24,8 +25,8 @@ TRadioMsg::~TRadioMsg(void)
 TRadioMsg::TRadioMsg(TRadioMsg &ref)
 {
     Timestamp = ref.Timestamp;
-    Sender = ref.Sender;
-    Recipient = ref.Recipient;
+    Sender_Node = ref.Sender_Node;
+    Recipient_Node = ref.Recipient_Node;
     Msg_Length = ref.Msg_Length;
     Msg_Data = new uint8[Msg_Length];
     for ( sint32 i = 0; i < Msg_Length; i++ )
