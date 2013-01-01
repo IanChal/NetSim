@@ -1,20 +1,20 @@
 Functions called:
- delete (492 times)
- delete[] (816 times)
- new[] (816 times)
- memset (18 times)
+ delete (363 times)
+ delete[] (557 times)
+ new[] (557 times)
+ memset (20 times)
  realloc (1 times)
  memcpy (1 times)
  free (29 times)
- new (501 times)
+ new (372 times)
  calloc (10 times)
  malloc (19 times)
 Resource types used:
- object array (816 allocs, 10 max)
- object (501 allocs, 57 max)
+ object array (557 allocs, 9 max)
+ object (372 allocs, 58 max)
  memory block (30 allocs, 19 max)
 Modules used:
- 00400000 01/01/2013 21:14:02 C:\Work\NetSim\Debug_Build\NetSim.exe
+ 00400000 01/01/2013 23:32:32 C:\Work\NetSim\Debug_Build\NetSim.exe
  0CD00000 11/03/2009 09:02:00 C:\Program Files (x86)\Embarcadero\RAD
  Studio\7.0\bin\CG32.DLL
  21280000 11/03/2009 09:02:00 C:\Program Files (x86)\Embarcadero\RAD
@@ -22,10 +22,10 @@ Modules used:
  32A00000 11/24/2009 09:04:00 C:\Windows\system32\CC32100MT.DLL
  50000000 11/03/2009 09:02:00 C:\Windows\system32\rtl140.bpl
  501C0000 11/03/2009 09:02:00 C:\Windows\system32\vcl140.bpl
- 6B5B0000 07/14/2009 12:14:54 C:\Windows\AppPatch\AcXtrnal.DLL
  6CB90000 07/14/2009 12:15:44 C:\Windows\system32\MSACM32.dll
  6CBB0000 11/20/2010 23:18:02 C:\Windows\AppPatch\AcGenral.DLL
- 6D7F0000 10/16/2012 18:39:54 C:\Windows\AppPatch\AcLayers.dll
+ 6DB20000 10/16/2012 18:39:54 C:\Windows\AppPatch\AcLayers.dll
+ 6DC40000 07/14/2009 12:14:54 C:\Windows\AppPatch\AcXtrnal.DLL
  6F750000 07/14/2009 12:16:16 C:\Windows\system32\sfc_os.DLL
  71220000 07/14/2009 12:15:46 C:\Windows\system32\msimg32.dll
  71230000 07/14/2009 12:15:14 C:\Windows\system32\dwmapi.dll
@@ -42,9 +42,9 @@ Modules used:
  72080000 11/20/2010 23:16:52 C:\Windows\system32\winspool.drv
  723F0000 11/20/2010 23:18:04 C:\Windows\system32\apphelp.dll
  726C0000 07/14/2009 12:10:24 C:\Windows\system32\sfc.dll
- 72D40000 07/14/2009 12:16:16 C:\Windows\system32\SortServer2003Compat.dll
- 72D50000 11/20/2010 23:21:20 C:\Windows\system32\SHUNIMPL.DLL
- 73750000 07/14/2009 12:16:14 C:\Windows\system32\oledlg.dll
+ 736E0000 07/14/2009 12:16:16 C:\Windows\system32\SortServer2003Compat.dll
+ 736F0000 11/20/2010 23:21:20 C:\Windows\system32\SHUNIMPL.DLL
+ 73730000 07/14/2009 12:16:14 C:\Windows\system32\oledlg.dll
  73F60000 11/20/2010 23:21:34 C:\Windows\system32\USERENV.dll
  74210000 11/20/2010 23:21:38 C:\Windows\system32\WINMM.dll
  74280000 07/14/2009 12:16:22 C:\Windows\system32\wsock32.dll

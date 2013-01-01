@@ -290,28 +290,23 @@ void TRfd::HandleJoinMyNetworkAck(TRadioMsg * /*msg*/)
 
 void TRfd::HandleSetClusterLevelCommand(TRadioMsg * msg)
 {
-    // Don't change the parent unless necessary
-    if ( Parent_Node != msg->Sender_Node )
+    if ( Parent_Node != NULL )
     {
-        if ( Parent_Node != NULL )
+        // Delete this node from the child list of the current parent
+        // TODO: How would this be achieved in reality??
+        if ( Parent_Node->Child_List->IndexOf(this) != -1 )
         {
-            // Delete this node from the child list of the current parent
-            // TODO: How would this be achieved in reality??
-            if ( Parent_Node->Child_List->IndexOf(this) != -1 )
-            {
-                Parent_Node->Child_List->Remove(this);
-            }
-            else
-            {
-                throw(Exception("Unexpected Orphan Node Found!"));
-            }
-        } // End of parent node already assigned
+            Parent_Node->Child_List->Remove(this);
+        }
+        else
+        {
+            throw(Exception("Unexpected Orphan Node Found!"));
+        }
+    } // End of parent node already assigned
 
-        // Make the parent-child association
-        Parent_Node = (TRouter *)msg->Sender_Node;
-        Cluster_Level = msg->Msg_Data[1];
-    } // End of parent node check
-
+    // Make the parent-child association
+    Parent_Node = (TRouter *)msg->Sender_Node;
+    Cluster_Level = msg->Msg_Data[1];
     SendSetClusterLevelAck(msg->Sender_Node);
 } // End of HandleSetClusterLevelCommand
 

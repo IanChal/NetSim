@@ -371,7 +371,7 @@ void __fastcall TformMain::FormPaint(TObject * /*Sender*/)
             sint32 parent_x = SHAPE_CENTRE_X(node->Parent_Node->Node_Body);
             sint32 parent_y = SHAPE_CENTRE_Y(node->Parent_Node->Node_Body);
             formMain->Canvas->Pen->Width = 1;
-            formMain->Canvas->Pen->Color = node->Parent_Node->Node_Body->Pen->Color;
+            formMain->Canvas->Pen->Color = node->Node_Body->Pen->Color;
             formMain->Canvas->Pen->Style = psDot;
             formMain->Canvas->MoveTo(child_x, child_y);
             formMain->Canvas->LineTo(parent_x, parent_y);
