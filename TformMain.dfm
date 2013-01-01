@@ -76,6 +76,7 @@ object formMain: TformMain
     Width = 177
     Height = 569
     Align = alLeft
+    BorderWidth = 1
     Columns = <
       item
         Caption = 'Tx'
@@ -151,9 +152,5 @@ object formMain: TformMain
       Caption = 'Delete Node'
       OnClick = menuDeleteNodeClick
     end
-  end
-  object Timer1: TTimer
-    Left = 320
-    Top = 64
   end
 end

@@ -7,8 +7,9 @@
 #include <inifiles.hpp>
 #pragma hdrstop
 
-#include "TCoordinator.h"
 #include "TformMain.h"
+#include "TCoordinator.h"
+#include "TRadioMsg.h"
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -204,14 +205,21 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
 {
     if ( Power_Is_On )
     {
-        // Switch off the power to the nextwork
+        // Switch off the power to the network
         Power_Is_On = false;
         btnPwr->Caption = "Power On";
         for ( sint32 i = 0; i < Node_List->Count; i++ )
         {
             TRfd * node = (TRfd *)Node_List->Items[i];
-            node->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
+            if ( i > 0 )
+            {
+                // Unassign the cluster level of each node, except the coordinator (always 0)
+                node->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
+            }
             node->Parent_Node = NULL;
+            node->Msg_Timeout_Timer->Enabled = false;
+            node->Msg_Timer->Enabled = false;
+            node->ClearMessageBuffer();
             if ( (node->Node_Type == NT_ROUTER) || (node->Node_Type == NT_COORDINATOR) )
             {
                 TRouter * router_node = (TRouter *)node;
@@ -229,7 +237,11 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
             TCoordinator * coord = (TCoordinator *)Node_List->First();
             Power_Is_On = true;
             btnPwr->Caption = "Power Off";
-            coord->Cluster_Level = 0;
+
+            // Start the network build by sending a Deiscover Descendants command from
+            // the coordinator to all nodes (that are within transmissino range)
+            coord->Retry_Counter = 0;
+            coord->SendJoinMyNetworkRequest(MSG_RECIPIENT_ALL_NODES);
         } // End of empty Node List check
     } // End of power is currently off
     btnNewRouter->Enabled = ! Power_Is_On;

@@ -4,22 +4,24 @@
 
 #pragma hdrstop
 
-#include "TformMain.h"
 #include "TRadioManager.h"
+#include "TRfd.h"
+#include "TRadioMsg.h"
+#include "TformMain.h"
 
 #pragma package(smart_init)
 
 
 TRadioManager radioManager;
 
-
 void TRadioManager::TransmitMsg(TRadioMsg * msg, TRfd * sender)
 {
     TListItem * new_item = formMain->lvLog->Items->Add();
-    new_item->Caption = IntToHex(msg->Sender_Node->MAC_Address, 4);
+    new_item->MakeVisible(false);
+    new_item->Caption = FormatFloat("#000", msg->Sender_Node->MAC_Address);
 
     new_item->SubItems->Add( (msg->Recipient_Node == MSG_RECIPIENT_ALL_NODES) ?
-                              (AnsiString)"<ALL>" : (AnsiString)IntToHex(msg->Recipient_Node->MAC_Address, 4) );
+                              (AnsiString)"<ALL>" : (AnsiString) FormatFloat("#000", msg->Recipient_Node->MAC_Address) );
     AnsiString data;
     for ( sint32 i = 0; i < msg->Msg_Length; i++ )
     {

@@ -7,7 +7,6 @@
 
 #include <vcl.h>
 
-#include "globals.h"
 #include "TRfd.h"
 
 /*-----------------*/
@@ -17,6 +16,8 @@
 /*---------------------------------------*/
 /* Definition of the TRadioManager class */
 /*---------------------------------------*/
+class TRadioMsg;
+class TRfd;
 class TRadioManager
 {
 public:

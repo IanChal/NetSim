@@ -10,9 +10,9 @@
 
 #pragma hdrstop
 
-#include "TRouter.h"
-#include "TformMain.h"
 #include "TRfd.h"
+#include "TformMain.h"
+#include "TRadioMsg.h"
 
 #pragma package(smart_init)
 
@@ -36,6 +36,7 @@ void TRfd::CommonConstructor(TComponent * owner)
     MAC_Address = 0;
     Parent_Node = NULL;
     Node_State = NS_NODE_IDLE;
+    Retry_Counter = 0;
 
     // Visual stuff
     Node_Body = new TShape(owner);
@@ -72,6 +73,10 @@ void TRfd::CommonConstructor(TComponent * owner)
     Msg_Timer->Enabled = false;
     Msg_Timer->OnTimer = Msg_TimerTimer;
 
+    Msg_Timeout_Timer = new TTimer(owner);
+    Msg_Timeout_Timer->Enabled = false;
+    Msg_Timeout_Timer->OnTimer = Msg_Timeout_TimerTimer;
+
     Msg_Buffer = new TList;
 } // End of CommonConstructor
 
@@ -81,14 +86,91 @@ TRfd::~TRfd(void)
     delete Node_Body;
     delete Node_Range;
     delete Node_Label;
+    ClearMessageBuffer();
+    delete Msg_Buffer;
+} // End of destructor
+
+
+void TRfd::ClearMessageBuffer(void)
+{
     while ( Msg_Buffer->Count > 0 )
     {
         TRadioMsg * msg = (TRadioMsg *)Msg_Buffer->First();
         delete msg;
         Msg_Buffer->Delete(0);
     }
-    delete Msg_Buffer;
-} // End of destructor
+} // End of ClearMessageBuffer
+
+
+/*-----------------------------------------------------------------------------------*/
+/* This timer emulates a periodic(?) reading of a message buffer.                    */
+/* Each time this timer triggers, all messages in the 'buffer' are read and executed */
+/*-----------------------------------------------------------------------------------*/
+void __fastcall TRfd::Msg_TimerTimer(TObject * /*Sender*/)
+{
+    Msg_Timer->Enabled = false;
+    while ( Msg_Buffer->Count > 0 )
+    {
+        TRadioMsg * rx_msg = (TRadioMsg *)Msg_Buffer->First();
+        if ( rx_msg->Msg_Length > 0 )
+        {
+            switch ( rx_msg->Msg_Data[0] )
+            {
+                case MT_JOIN_MY_NETWORK_REQ:
+                    HandleJoinMyNetworkRequest(rx_msg);
+                    break;
+
+
+                case MT_JOIN_MY_NETWORK_ACK:
+                    HandleJoinMyNetworkAck(rx_msg);
+                    break;
+
+
+                case MT_SET_CLUSTER_LEVEL_CMD:
+                    HandleSetClusterLevelCommand(rx_msg);
+                    break;
+
+
+                case MT_SET_CLUSTER_LEVEL_ACK:
+                    HandleSetClusterLevelAck(rx_msg);
+                    break;
+
+
+                case MT_DISCOVER_DESCENDANTS_CMD:
+                    HandleDiscoverDescendantsCommand(rx_msg);
+                    break;
+
+
+                case MT_DISCOVER_DESCENDANTS_ACK:
+                    // No action necessary - it's just to complete the reqyest / responsse pair
+                    break;
+
+
+                case MT_DESCENDANT_DISCOVERY_DONE_MSG:
+                    HandleDescendantDiscoveryDoneMsg(rx_msg);
+
+
+                default:
+                    break;
+                // End of default case
+            } // End of switch statement
+        } // End of message length check
+
+        // Delete the read message
+        delete rx_msg;
+        Msg_Buffer->Delete(0);
+    } // End of message buffer scan loop
+} // End of Msg_TimerTimer
+
+
+/*---------------------------------------------------------------------*/
+/* The Msg Timeout Timer event means that a message has timed out,     */
+/* possibly without being answered, though this is not always the case */
+/*---------------------------------------------------------------------*/
+void __fastcall TRfd::Msg_Timeout_TimerTimer(TObject * /*Sender*/)
+{
+    Msg_Timeout_Timer->Enabled = false;
+} // End of Msg_Timeout_TimerTimer
 
 
 void TRfd::DrawNode(sint32 x, sint32 y)
@@ -106,31 +188,13 @@ void TRfd::DrawNode(sint32 x, sint32 y)
 
 
 /*-----------------------------------------------------------------------------------*/
-/* This timer emulates a periodic(?) reading of a message buffer.                    */
-/* Each time this timer triggers, all messages in the 'buffer' are read and executed */
+/* Message Transmission Methods (some of these may be overridden by derived classes) */
 /*-----------------------------------------------------------------------------------*/
-void __fastcall TRfd::Msg_TimerTimer(TObject * /*Sender*/)
+
+void TRfd::SendJoinMyNetworkRequest(TRfd * /*target_node*/)
 {
-    Msg_Timer->Enabled = false;
-
-} // End of Msg_TimerTimer
-
-
-void TRfd::DiscoverDescendants(void)
-{
-    // An RFD cannot have any descendants, so just send back acknowledgments to say 'done'
-} // End of DiscoverDescendants
-
-
-void TRfd::SendJoinMyNetworkRequest(TRfd * target_node)
-{
-    // The node is sending a request (should be to all nodes) to join the network as a child of this node
-    TRadioMsg msg(2);
-    msg.Recipient_Node = target_node;
-    msg.Sender_Node = this;
-    msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_REQ;
-    msg.Msg_Data[1] = this->Cluster_Level + 1;
-    radioManager.TransmitMsg(&msg, this);
+    // An RFD should never send this message
+    throw(Exception("Unexpected Message Transmission"));
 } // End of SendJoinMyNetworkRequest
 
 
@@ -145,15 +209,10 @@ void TRfd::SendJoinMyNetworkAck(TRfd * target_node)
 } // End of SendJoinMyNetworkAck
 
 
-void TRfd::SendSetClusterLevelCommand(TRfd * target_node)
+void TRfd::SendSetClusterLevelCommand(TRfd * /*target_node*/)
 {
-    // Send the target node a command to set its cluster level
-    TRadioMsg msg(2);
-    msg.Recipient_Node = target_node;
-    msg.Sender_Node = this;
-    msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_CMD;
-    msg.Msg_Data[1] = Cluster_Level + 1;
-    radioManager.TransmitMsg(&msg, this);
+    // An RFD should never send this message
+    throw(Exception("Unexpected Message Transmission"));
 } // End of SendSetClusterLevelCommand
 
 
@@ -168,14 +227,10 @@ void TRfd::SendSetClusterLevelAck(TRfd * target_node)
 } // End of SendSetClusterLevelAck
 
 
-void TRfd::SendDiscoverDescendantsCommand(TRfd * target_node)
+void TRfd::SendDiscoverDescendantsCommand(TRfd * /*target_node*/)
 {
-    // Send the target node a command to disciver all of its Descendant nodes
-    TRadioMsg msg(1);
-    msg.Recipient_Node = target_node;
-    msg.Sender_Node = this;
-    msg.Msg_Data[0] = MT_DISCOVER_DESCENDANTS_CMD;
-    radioManager.TransmitMsg(&msg, this);
+    // An RFD should never send this message
+    throw(Exception("Unexpected Message Transmission"));
 } // End of SendDiscoverDescendantsCommand
 
 
@@ -201,15 +256,85 @@ void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node)
 } // End of SendDescendantDiscoveryCompleteMsg
 
 
-void TRfd::SendDescendantDiscoveryCompleteAck(TRfd * target_node)
+void TRfd::SendDescendantDiscoveryCompleteAck(TRfd * /*target_node*/)
 {
-    // Acknowledge the Descendant Discovery Complete message
-    TRadioMsg msg(1);
-    msg.Recipient_Node = target_node;
-    msg.Sender_Node = this;
-    msg.Msg_Data[0] = MT_DESCENDANT_DISCOVERY_DONE_ACK;
-    radioManager.TransmitMsg(&msg, this);
+    // An RFD should never send this message
+    throw(Exception("Unexpected Message Transmission"));
 } // End of SendDescendantDiscoveryCompleteAck
 
 
+/*-------------------------------------------------------------------------------*/
+/* Message handling methods (some of these may be overridden by derived classes) */
+/*-------------------------------------------------------------------------------*/
+
+void TRfd::HandleJoinMyNetworkRequest(TRadioMsg * msg)
+{
+    // Check the cluster level to decide whether to join the network
+    if ( msg->Msg_Data[1] < Cluster_Level )
+    {
+        // The cluster level offered is less than the current value (less hops to coordinator),
+        // so acknowledge the request. No action is taken at this point in case the sender node
+        // cannot received our transmissions (too weak). If this happened, this node would falsely
+        // flag that it is connected to the network!
+        SendJoinMyNetworkAck(msg->Sender_Node);
+    } // End of cluster level check
+} // End of HandleJoinMyNetworkRequest
+
+
+void TRfd::HandleJoinMyNetworkAck(TRadioMsg * /*msg*/)
+{
+    // An RFD should never receive this message
+    throw(Exception("Unexpected Message Transmission"));
+} // End of HandleJoinMyNetworkAck
+
+
+void TRfd::HandleSetClusterLevelCommand(TRadioMsg * msg)
+{
+    // Don't change the parent unless necessary
+    if ( Parent_Node != msg->Sender_Node )
+    {
+        if ( Parent_Node != NULL )
+        {
+            // Delete this node from the child list of the current parent
+            // TODO: How would this be achieved in reality??
+            if ( Parent_Node->Child_List->IndexOf(this) != -1 )
+            {
+                Parent_Node->Child_List->Remove(this);
+            }
+            else
+            {
+                throw(Exception("Unexpected Orphan Node Found!"));
+            }
+        } // End of parent node already assigned
+
+        // Make the parent-child association
+        Parent_Node = (TRouter *)msg->Sender_Node;
+        Cluster_Level = msg->Msg_Data[1];
+    } // End of parent node check
+
+    SendSetClusterLevelAck(msg->Sender_Node);
+} // End of HandleSetClusterLevelCommand
+
+
+void TRfd::HandleSetClusterLevelAck(TRadioMsg * /*msg*/)
+{
+    // An RFD should never receive this message
+    throw(Exception("Unexpected Message Transmission"));
+} // End of HandleSetClusterLevelAck
+
+
+void TRfd::HandleDiscoverDescendantsCommand(TRadioMsg * msg)
+{
+    // An RFD does not support descendants, so just send back positive
+    // responses as if no descendants had been found
+    SendDiscoverDescendantsAck(msg->Sender_Node);
+    SendDescendantDiscoveryCompleteMsg(msg->Sender_Node);
+} // End of HandleDiscoverDescendantsCommand
+
+
+void TRfd::HandleDescendantDiscoveryDoneMsg(TRadioMsg * msg)
+{
+    // An RFD should never receive this message
+    throw(Exception("Unexpected Message Transmission"));
+} // End of HandleDescendantDiscoveryDoneMsg
 

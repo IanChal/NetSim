@@ -11,12 +11,10 @@
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
 #include <ExtCtrls.hpp>
-
-#include "TRadioManager.h"
-#include "TRouter.h"
-#include "TCoordinator.h"
 #include <ComCtrls.hpp>
 #include <Menus.hpp>
+#include "globals.h"
+#include "TRadioManager.h"
 
 
 /*-------------------*/
@@ -34,6 +32,8 @@
 /*-----------------------------------*/
 /* Definition of the TformMain class */
 /*-----------------------------------*/
+class TRfd;
+class TRadiomanager;
 class TformMain : public TForm
 {
 __published:	// IDE-managed Components
@@ -59,7 +59,6 @@ __published:	// IDE-managed Components
     TMenuItem *About1;
     TPopupMenu *menuContextNode;
     TMenuItem *menuDeleteNode;
-    TTimer *Timer1;
     TButton *btnClearLog;
     void __fastcall btnPwrClick(TObject *Sender);
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
