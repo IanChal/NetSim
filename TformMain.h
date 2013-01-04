@@ -78,11 +78,15 @@ __published:	// IDE-managed Components
     void __fastcall FormPaint(TObject *Sender);
     void __fastcall menuExitClick(TObject *Sender);
     void __fastcall menuLoadClick(TObject *Sender);
+    void __fastcall menuSaveClick(TObject *Sender);
+    void __fastcall menuSaveAsClick(TObject *Sender);
 
 private:
     // Private Data
     sint32 Total_Node_Count;
     bool Power_Is_On;
+    AnsiString Network_Filename;
+    bool Network_Changed;
 
     // Node-dragging stuff
     TRfd * Node_Being_Dragged;

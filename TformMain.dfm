@@ -112,9 +112,11 @@ object formMain: TformMain
       end
       object menuSave: TMenuItem
         Caption = 'Save Network File'
+        OnClick = menuSaveClick
       end
       object menuSaveAs: TMenuItem
         Caption = 'Save Network As ...'
+        OnClick = menuSaveAsClick
       end
       object N1: TMenuItem
         Caption = '-'
@@ -165,7 +167,7 @@ object formMain: TformMain
   object dialogSave: TSaveDialog
     DefaultExt = '.nwk'
     Filter = 'Network Files (*.nwk)|*.nwk|All Files (*.*)|*.*'
-    Title = 'Save Network'
+    Title = 'Save Network As'
     Left = 352
     Top = 136
   end

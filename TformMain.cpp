@@ -17,6 +17,13 @@
 TformMain *formMain;
 
 
+/*-------------------*/
+/* Macro definitions */
+/*-------------------*/
+
+#define APPLICATION_NAME                    "Network Simulator"
+
+
 /*--------------------------------*/
 /* Methods of the TformMain class */
 /*--------------------------------*/
@@ -27,116 +34,36 @@ __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
     Node_Being_Dragged = NULL;
     Total_Node_Count = 0;
     Power_Is_On = false;
+    Network_Filename = "";
+    Network_Changed = false;
+    Caption = (AnsiString)APPLICATION_NAME + " - (Unnamed Network)";
 } // End of constructor
 
 
 void __fastcall TformMain::FormCreate(TObject * /*Sender*/)
 {
-TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
-
-    if ( (ini != NULL) && FileExists(ini->FileName) )
-    {
-        sint32 node_count = ini->ReadInteger(INI_SECTION_NAME, "Count", 0);
-        for ( sint32 i = 0; i < node_count; i++ )
-        {
-            TRfd * new_node;
-            try
-            {
-                TNodeType type = TNodeType(ini->ReadInteger(INI_SECTION_NAME, "Type"+IntToStr(i), NT_UNKNOWN));
-                sint32 x_pos = ini->ReadInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), lvLog->Width) + (DEFAULT_NODE_SIZE / 2);
-                sint32 y_pos = ini->ReadInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), panelTools->Height) + (DEFAULT_NODE_SIZE / 2);
-                switch (type)
-                {
-                    case NT_COORDINATOR:
-                    {
-                        TCoordinator * c = new TCoordinator(this);
-                        c->Node_Body->Parent = this;
-                        c->Node_Range->Parent = this;
-                        c->Node_Label->Parent = this;
-                        c->DrawNode(x_pos, y_pos);
-                        c->Node_Label->BringToFront();
-                        Node_List->Add(c);
-                        Total_Node_Count++;
-                        break;
-                    }
-
-                    case NT_ROUTER:
-                    {
-                        TRouter * r = new TRouter(this);
-                        r->Node_Body->Parent = this;
-                        r->Node_Range->Parent = this;
-                        r->Node_Label->Parent = this;
-                        r->MAC_Address = Total_Node_Count;
-                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-                        r->Node_Label->BringToFront();
-                        r->DrawNode(x_pos, y_pos);
-                        Node_List->Add(r);
-                        Total_Node_Count++;
-                        break;
-                    }
-
-                    case NT_END_DEVICE:
-                    {
-                        TRfd * r = new TRfd(this);
-                        r->Node_Body->Parent = this;
-                        r->Node_Range->Parent = this;
-                        r->Node_Label->Parent = this;
-                        r->MAC_Address = Total_Node_Count;
-                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-                        r->Node_Label->BringToFront();
-                        r->DrawNode(x_pos, y_pos);
-                        Node_List->Add(r);
-                        Total_Node_Count++;
-                        break;
-                    }
-
-                    default:
-                        // Just ignore any erroneous entries
-                        break;
-                } // End of switch statement
-            }
-            catch (...)
-            {
-            }
-        } // End of node list scan loop
-        delete ini;
-    } // End of ini file checks
-
-    if ( Node_List->Count == 0 )
-    {
-        // If there's a problem reading the .ini file, just create a coordinator
-    	TCoordinator * c = new TCoordinator(this);
-        c->Node_Body->Parent = this;
-        c->Node_Range->Parent = this;
-        c->Node_Label->Parent = this;
-        c->DrawNode(lvLog->Width + (c->Node_Body->Width / 2), panelTools->Height + (c->Node_Body->Width / 2));
-        c->Node_Label->BringToFront();
-        Node_List->Add(c);
-        Total_Node_Count++;
-    } // End of empty Node List check
+    LoadNetworkConfig(INI_FILENAME);
 } // End of FormCreate
 
 
-void __fastcall TformMain::FormClose(TObject * /*Sender*/, TCloseAction &/*Action*/)
+void __fastcall TformMain::FormClose(TObject * /*Sender*/, TCloseAction &Action)
 {
-TIniFile *ini = new(nothrow) TIniFile(INI_FILENAME);
-    if ( ini != NULL )
+    if ( !Network_Filename.IsEmpty() && Network_Changed )
     {
-        if ( ini->SectionExists(INI_SECTION_NAME) )
+        AnsiString msg = "Changes to the network configuration have not been changed.\nSave Changes now?";
+        TModalResult result = MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
+        if ( result == mrYes )
         {
-            ini->EraseSection(INI_SECTION_NAME);
+            menuSave->Click();
         }
-        ini->WriteInteger(INI_SECTION_NAME, "Count", Node_List->Count);
-        for ( sint32 i = 0; i < Node_List->Count; i++ )
+        else if ( result == mrCancel )
         {
-            TRfd * node = (TRfd *)Node_List->Items[i];
-            ini->WriteInteger(INI_SECTION_NAME, "Type"+IntToStr(i), node->Node_Type);
-            ini->WriteInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), node->Node_Body->Left);
-            ini->WriteInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), node->Node_Body->Top);
+            Action = caNone;
+        }
+    } // End of Network changed check
 
-        } // End of node list scan loop
-        delete ini;
-    } // End of null pointer check
+    // Regardless of changes, save the current configuratino for restore on next startup
+    SaveNetworkConfig(INI_FILENAME);
 } // End of FormClose
 
 
@@ -171,6 +98,11 @@ void __fastcall TformMain::btnNewRouterClick(TObject * /*Sender*/)
     r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
     Node_List->Add(r);
     Total_Node_Count++;
+    if ( ! Network_Changed )
+    {
+        Network_Changed = true;
+        Caption = Caption + "*";
+    }
 } // End of btnNewRouterClick
 
 
@@ -186,6 +118,11 @@ void __fastcall TformMain::btnNewZedClick(TObject * /*Sender*/)
     r->DrawNode(lvLog->Width + (r->Node_Body->Width / 2), panelTools->Height + (r->Node_Body->Height / 2));
     Node_List->Add(r);
     Total_Node_Count++;
+    if ( ! Network_Changed )
+    {
+        Network_Changed = true;
+        Caption = Caption + "*";
+    }
 } // End of btnNewZedClick
 
 
@@ -314,6 +251,11 @@ void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Bu
         Node_Being_Dragged->Node_Range->Visible = cbShowRange->Checked;
         Node_Being_Dragged = NULL;
     }
+    if ( ! Network_Changed )
+    {
+        Network_Changed = true;
+        Caption = Caption + "*";
+    }
 } // End of shNodeMouseUp
 
 
@@ -332,6 +274,11 @@ void __fastcall TformMain::menuDeleteNodeClick(TObject */*Sender*/)
         TRfd * node = (TRfd *)Node_List->Items[i];
         delete node;
         Node_List->Delete(i);
+        if ( ! Network_Changed )
+        {
+            Network_Changed = true;
+            Caption = Caption + "*";
+        }
     }
 } // End of menuDeleteNodeClick
 
@@ -497,7 +444,19 @@ void __fastcall TformMain::menuExitClick(TObject * /*Sender*/)
 
 void __fastcall TformMain::menuLoadClick(TObject * /*Sender*/)
 {
-    if ( dialogOpen->Execute() )
+    TModalResult result = mrNone;
+
+    if ( !Network_Filename.IsEmpty() && Network_Changed )
+    {
+        AnsiString msg = "Changes to the network configuration have not been changed.\nSave Changes now?";
+        result = MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
+        if ( result == mrYes )
+        {
+            menuSave->Click();
+        }
+    } // End of Network changed check
+
+    if ( (result != mrCancel) && dialogOpen->Execute() )
     {
         // Delete all nodes in the list before loading new ones
         while ( Node_List->Count > 0 )
@@ -508,6 +467,35 @@ void __fastcall TformMain::menuLoadClick(TObject * /*Sender*/)
         }
         Total_Node_Count = 0;
         LoadNetworkConfig(dialogOpen->FileName);
+        Network_Filename = dialogOpen->FileName;
+        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
+        Network_Changed = false;
     } // End of ok clicked
 } // End of menuLoadClick
+
+
+void __fastcall TformMain::menuSaveClick(TObject *Sender)
+{
+    if ( Network_Filename.IsEmpty() )
+    {
+        // File does not yet have a name, so prompt for one
+        menuSaveAsClick(Sender);
+    }
+    else
+    {
+        // File already has a name, so use it
+        SaveNetworkConfig(Network_Filename);
+    }
+} // End of menuSaveClick
+
+
+void __fastcall TformMain::menuSaveAsClick(TObject * /*Sender*/)
+{
+    if ( dialogSave->Execute() )
+    {
+        SaveNetworkConfig(dialogSave->FileName);
+        Network_Filename = dialogSave->FileName;
+        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
+    } // End of OK button pressed
+} // End of menuSaveAsClick
 
