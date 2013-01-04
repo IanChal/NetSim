@@ -107,10 +107,11 @@ object formMain: TformMain
     object menuFile: TMenuItem
       Caption = 'File'
       object menuLoad: TMenuItem
-        Caption = 'Load Network ...'
+        Caption = 'Load Network File ...'
+        OnClick = menuLoadClick
       end
       object menuSave: TMenuItem
-        Caption = 'Save Network'
+        Caption = 'Save Network File'
       end
       object menuSaveAs: TMenuItem
         Caption = 'Save Network As ...'
@@ -120,6 +121,7 @@ object formMain: TformMain
       end
       object menuExit: TMenuItem
         Caption = 'Exit'
+        OnClick = menuExitClick
       end
     end
     object menuNetwork: TMenuItem
@@ -152,5 +154,19 @@ object formMain: TformMain
       Caption = 'Delete Node'
       OnClick = menuDeleteNodeClick
     end
+  end
+  object dialogOpen: TOpenDialog
+    DefaultExt = '.nwk'
+    Filter = 'Network Files (*.nwk)|*.nwk|All Files (*.*)|*.*'
+    Title = 'Load Network'
+    Left = 352
+    Top = 72
+  end
+  object dialogSave: TSaveDialog
+    DefaultExt = '.nwk'
+    Filter = 'Network Files (*.nwk)|*.nwk|All Files (*.*)|*.*'
+    Title = 'Save Network'
+    Left = 352
+    Top = 136
   end
 end

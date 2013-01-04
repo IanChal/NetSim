@@ -89,7 +89,7 @@ void __fastcall TRouter::Msg_Timeout_TimerTimer(TObject * /*Sender*/)
                     // There are no more children to discover, so the process is complete
                     if ( Parent_Node != NULL )
                     {
-                        SendDescendantDiscoveryCompleteMsg(Parent_Node);
+                        SendDescendantDiscoveryCompleteMsg(Parent_Node, Child_List->Count);
                     }
                 }
             } // End of retries expired
@@ -123,7 +123,7 @@ void TRouter::SendJoinMyNetworkRequest(TRfd * target_node)
     Child_Added = false;
     if ( Msg_Timeout_Timer->Enabled == false )
     {
-        Msg_Timeout_Timer->Interval = 500;
+        Msg_Timeout_Timer->Interval = 700;
         Msg_Timeout_Timer->Enabled = true;
     }
 } // End of SendJoinMyNetworkRequest
@@ -213,7 +213,7 @@ void TRouter::HandleDescendantDiscoveryDoneMsg(TRadioMsg * msg)
         // There are no more children, so our descendant discovery is complete
         if ( Parent_Node != NULL )
         {
-            SendDescendantDiscoveryCompleteMsg(Parent_Node);
+            SendDescendantDiscoveryCompleteMsg(Parent_Node, Child_List->Count);
         }
     }
 } // End of HandleDescendantDiscoveryDoneMsg

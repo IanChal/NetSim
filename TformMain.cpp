@@ -379,3 +379,135 @@ void __fastcall TformMain::FormPaint(TObject * /*Sender*/)
     } // End of node list scan loop
 } // End of FormPaint
 
+
+void TformMain::LoadNetworkConfig(AnsiString filename)
+{
+TIniFile *ini = new(nothrow) TIniFile(filename);
+
+    if ( (ini != NULL) && FileExists(ini->FileName) )
+    {
+        sint32 node_count = ini->ReadInteger(INI_SECTION_NAME, "Count", 0);
+        for ( sint32 i = 0; i < node_count; i++ )
+        {
+            TRfd * new_node;
+            try
+            {
+                TNodeType type = TNodeType(ini->ReadInteger(INI_SECTION_NAME, "Type"+IntToStr(i), NT_UNKNOWN));
+                sint32 x_pos = ini->ReadInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), lvLog->Width) + (DEFAULT_NODE_SIZE / 2);
+                sint32 y_pos = ini->ReadInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), panelTools->Height) + (DEFAULT_NODE_SIZE / 2);
+                switch (type)
+                {
+                    case NT_COORDINATOR:
+                    {
+                        TCoordinator * c = new TCoordinator(this);
+                        c->Node_Body->Parent = this;
+                        c->Node_Range->Parent = this;
+                        c->Node_Label->Parent = this;
+                        c->DrawNode(x_pos, y_pos);
+                        c->Node_Label->BringToFront();
+                        Node_List->Add(c);
+                        Total_Node_Count++;
+                        break;
+                    }
+
+                    case NT_ROUTER:
+                    {
+                        TRouter * r = new TRouter(this);
+                        r->Node_Body->Parent = this;
+                        r->Node_Range->Parent = this;
+                        r->Node_Label->Parent = this;
+                        r->MAC_Address = Total_Node_Count;
+                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+                        r->Node_Label->BringToFront();
+                        r->DrawNode(x_pos, y_pos);
+                        Node_List->Add(r);
+                        Total_Node_Count++;
+                        break;
+                    }
+
+                    case NT_END_DEVICE:
+                    {
+                        TRfd * r = new TRfd(this);
+                        r->Node_Body->Parent = this;
+                        r->Node_Range->Parent = this;
+                        r->Node_Label->Parent = this;
+                        r->MAC_Address = Total_Node_Count;
+                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+                        r->Node_Label->BringToFront();
+                        r->DrawNode(x_pos, y_pos);
+                        Node_List->Add(r);
+                        Total_Node_Count++;
+                        break;
+                    }
+
+                    default:
+                        // Just ignore any erroneous entries
+                        break;
+                } // End of switch statement
+            }
+            catch (...)
+            {
+            }
+        } // End of node list scan loop
+        delete ini;
+    } // End of ini file checks
+
+    if ( Node_List->Count == 0 )
+    {
+        // If there's a problem reading the .ini file, just create a coordinator
+    	TCoordinator * c = new TCoordinator(this);
+        c->Node_Body->Parent = this;
+        c->Node_Range->Parent = this;
+        c->Node_Label->Parent = this;
+        c->DrawNode(lvLog->Width + (c->Node_Body->Width / 2), panelTools->Height + (c->Node_Body->Width / 2));
+        c->Node_Label->BringToFront();
+        Node_List->Add(c);
+        Total_Node_Count++;
+    } // End of empty Node List check
+} // End of LoadNetworkConfig
+
+
+void TformMain::SaveNetworkConfig(AnsiString filename)
+{
+TIniFile *ini = new(nothrow) TIniFile(filename);
+    if ( ini != NULL )
+    {
+        if ( ini->SectionExists(INI_SECTION_NAME) )
+        {
+            ini->EraseSection(INI_SECTION_NAME);
+        }
+        ini->WriteInteger(INI_SECTION_NAME, "Count", Node_List->Count);
+        for ( sint32 i = 0; i < Node_List->Count; i++ )
+        {
+            TRfd * node = (TRfd *)Node_List->Items[i];
+            ini->WriteInteger(INI_SECTION_NAME, "Type"+IntToStr(i), node->Node_Type);
+            ini->WriteInteger(INI_SECTION_NAME, "PosX"+IntToStr(i), node->Node_Body->Left);
+            ini->WriteInteger(INI_SECTION_NAME, "PosY"+IntToStr(i), node->Node_Body->Top);
+
+        } // End of node list scan loop
+        delete ini;
+    } // End of null pointer check
+} // End of SaveNetworkConfig
+
+void __fastcall TformMain::menuExitClick(TObject * /*Sender*/)
+{
+    Close();
+} // End of menuExitClick
+
+
+void __fastcall TformMain::menuLoadClick(TObject * /*Sender*/)
+{
+    if ( dialogOpen->Execute() )
+    {
+        // Delete all nodes in the list before loading new ones
+        while ( Node_List->Count > 0 )
+        {
+            TRfd * node = (TRfd *)Node_List->First();
+            delete node;
+            Node_List->Delete(0);
+        }
+        Total_Node_Count = 0;
+        LoadNetworkConfig(dialogOpen->FileName);
+    } // End of ok clicked
+} // End of menuLoadClick
+

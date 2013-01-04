@@ -15,6 +15,7 @@
 #include <Menus.hpp>
 #include "globals.h"
 #include "TRadioManager.h"
+#include <Dialogs.hpp>
 
 
 /*-------------------*/
@@ -60,6 +61,8 @@ __published:	// IDE-managed Components
     TPopupMenu *menuContextNode;
     TMenuItem *menuDeleteNode;
     TButton *btnClearLog;
+    TOpenDialog *dialogOpen;
+    TSaveDialog *dialogSave;
     void __fastcall btnPwrClick(TObject *Sender);
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
@@ -73,6 +76,8 @@ __published:	// IDE-managed Components
     void __fastcall menuDeleteNodeClick(TObject *Sender);
     void __fastcall btnClearLogClick(TObject *Sender);
     void __fastcall FormPaint(TObject *Sender);
+    void __fastcall menuExitClick(TObject *Sender);
+    void __fastcall menuLoadClick(TObject *Sender);
 
 private:
     // Private Data
@@ -86,6 +91,8 @@ private:
 
 	// Private Methods
     sint32 FindNodeIndex(TObject * sender);
+    void LoadNetworkConfig(AnsiString filename);
+    void SaveNetworkConfig(AnsiString filename);
 
 public:
 	// Public Data

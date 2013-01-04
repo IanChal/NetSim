@@ -245,13 +245,14 @@ void TRfd::SendDiscoverDescendantsAck(TRfd * target_node)
 } // End of SendDiscoverDescendantsAck
 
 
-void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node)
+void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node, sint32 count)
 {
     // Tell the target node (should be parent) that this node has finished discovering all it's descendants
-    TRadioMsg msg(1);
+    TRadioMsg msg(2);
     msg.Recipient_Node = target_node;
     msg.Sender_Node = this;
     msg.Msg_Data[0] = MT_DESCENDANT_DISCOVERY_DONE_MSG;
+    msg.Msg_Data[1] = count;
     radioManager.TransmitMsg(&msg, this);
 } // End of SendDescendantDiscoveryCompleteMsg
 
@@ -323,11 +324,11 @@ void TRfd::HandleDiscoverDescendantsCommand(TRadioMsg * msg)
     // An RFD does not support descendants, so just send back positive
     // responses as if no descendants had been found
     SendDiscoverDescendantsAck(msg->Sender_Node);
-    SendDescendantDiscoveryCompleteMsg(msg->Sender_Node);
+    SendDescendantDiscoveryCompleteMsg(msg->Sender_Node, 0);
 } // End of HandleDiscoverDescendantsCommand
 
 
-void TRfd::HandleDescendantDiscoveryDoneMsg(TRadioMsg * msg)
+void TRfd::HandleDescendantDiscoveryDoneMsg(TRadioMsg * /*msg*/)
 {
     // An RFD should never receive this message
     throw(Exception("Unexpected Message Transmission"));
