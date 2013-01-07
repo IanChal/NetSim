@@ -5,7 +5,7 @@
       <Option Name="Personality">CPlusPlusBuilder.Personality</Option>
       <Option Name="ProjectType">CppVCLApplication</Option>
       <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{32D09DE9-96FA-419B-AF91-8A7E414C2077}</Option>
+      <Option Name="GUID">{013350BB-5F18-46A9-87F6-EE5F52E349AF}</Option>
     </Option>
   </PersonalityInfo>
   <CPlusPlusBuilder.Personality>
@@ -82,7 +82,7 @@
           <property category="win32.*.win32b.bcc32" name="option.H=.arg.merge" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.H=.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.Hc.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.bcc32" name="option.I.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.2" value="$(BDS)\include"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.3" value="$(BDS)\include\dinkumware"/>
           <property category="win32.*.win32b.bcc32" name="option.I.arg.4" value="$(BDS)\include\vcl"/>
@@ -98,27 +98,27 @@
           <property category="win32.*.win32b.bcc32" name="option.tWC.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="1"/>
-          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.dcc32" name="option.I.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.dcc32" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.I.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.dcc32" name="option.O.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.dcc32" name="option.O.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.O.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.dcc32" name="option.R.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.dcc32" name="option.R.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.R.enabled" value="0"/>
-          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.dcc32" name="option.U.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.2" value="C:\Documents and Settings\temp\My Documents\Borland Studio Projects"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.3" value="$(BDS)\lib"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.4" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.dcc32" name="option.U.arg.merge" value="1"/>
           <property category="win32.*.win32b.dcc32" name="option.U.enabled" value="1"/>
           <property category="win32.*.win32b.dcc32" name="param.filenames.merge" value="1"/>
-          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.idl2cpp" name="option.I.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.arg.merge" value="1"/>
           <property category="win32.*.win32b.idl2cpp" name="option.I.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.Gi.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.ilink32" name="option.L.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.2" value="$(BDS)\lib"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.3" value="$(BDS)\lib\obj"/>
           <property category="win32.*.win32b.ilink32" name="option.L.arg.4" value="$(BDS)\lib\psdk"/>
@@ -130,7 +130,7 @@
           <property category="win32.*.win32b.ilink32" name="option.aa.enabled" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.ap.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.dynamicrtl.enabled" value="1"/>
-          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="Y:\UTA-1489"/>
+          <property category="win32.*.win32b.ilink32" name="option.j.arg.1" value="Y:\UTA-1489\Netsim"/>
           <property category="win32.*.win32b.ilink32" name="option.j.arg.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="option.j.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.1" value="$(LIBRARIES)"/>
@@ -148,10 +148,11 @@
         <FILE FILENAME="NetSim.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="NetSim" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="NetSim.res" CONTAINERID="ResTool" LOCALCOMMAND="" UNITNAME="NetSim.res" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="TformMain.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TformMain" FORMNAME="formMain" DESIGNCLASS="" ADDITIONAL="TformMain.h"/>
-        <FILE FILENAME="TRfd.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TRfd" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TRfd.h"/>
         <FILE FILENAME="TRouter.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TRouter" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TRouter.h"/>
         <FILE FILENAME="TCoordinator.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TCoordinator" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TCoordinator.h"/>
         <FILE FILENAME="TRadioManager.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TRadioManager" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TRadioManager.h"/>
+        <FILE FILENAME="TRadioMsg.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TRadioMsg" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TRadioMsg.h"/>
+        <FILE FILENAME="TRfd.cpp" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TRfd" FORMNAME="" DESIGNCLASS="" ADDITIONAL="TRfd.h"/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>

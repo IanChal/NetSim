@@ -1,7 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-  ClientHeight = 610
+  ClientHeight = 630
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -74,7 +74,7 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
-    Height = 569
+    Height = 589
     Align = alLeft
     BorderWidth = 1
     Columns = <
@@ -155,6 +155,12 @@ object formMain: TformMain
     object menuDeleteNode: TMenuItem
       Caption = 'Delete Node'
       OnClick = menuDeleteNodeClick
+    end
+    object menuBar: TMenuItem
+      Caption = '-'
+    end
+    object menuDummy: TMenuItem
+      Caption = 'Dummy'
     end
   end
   object dialogOpen: TOpenDialog

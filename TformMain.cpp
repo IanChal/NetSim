@@ -152,6 +152,7 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
             {
                 // Unassign the cluster level of each node, except the coordinator (always 0)
                 node->Cluster_Level = CLUSTER_LEVEL_UNKNOWN;
+                node->Node_Label->Font->Color = clBlack;
             }
             node->Parent_Node = NULL;
             node->Msg_Timeout_Timer->Enabled = false;
@@ -250,11 +251,11 @@ void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Bu
     {
         Node_Being_Dragged->Node_Range->Visible = cbShowRange->Checked;
         Node_Being_Dragged = NULL;
-    }
-    if ( ! Network_Changed )
-    {
-        Network_Changed = true;
-        Caption = Caption + "*";
+        if ( ! Network_Changed )
+        {
+            Network_Changed = true;
+            Caption = Caption + "*";
+        }
     }
 } // End of shNodeMouseUp
 
@@ -262,7 +263,26 @@ void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Bu
 void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
 {
     sint32 i = FindNodeIndex(menuContextNode->PopupComponent);
-    menuDeleteNode->Enabled = ( i > 0 );
+    if ( i > 0 )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        menuDeleteNode->Enabled = true;
+        menuDummy->Visible = true;
+        if ( node->Parent_Node != NULL )
+        {
+            menuDummy->Caption = "Info: Parent = " + FormatFloat("#00", node->Parent_Node->MAC_Address);
+        }
+        else
+        {
+            menuDummy->Caption = "Info: Parent = <None>";
+        }
+    }
+    else
+    {
+        menuDeleteNode->Enabled = false;
+        menuDummy->Visible = false;
+    }
+    menuBar->Visible = menuDummy->Visible;
 } // End of menuContextNodePopup
 
 
@@ -496,6 +516,7 @@ void __fastcall TformMain::menuSaveAsClick(TObject * /*Sender*/)
         SaveNetworkConfig(dialogSave->FileName);
         Network_Filename = dialogSave->FileName;
         formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
+        Network_Changed = false;
     } // End of OK button pressed
 } // End of menuSaveAsClick
 

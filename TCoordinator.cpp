@@ -26,6 +26,7 @@ TCoordinator::TCoordinator(TComponent * owner) : TRouter(owner)
     Node_Body->Brush->Color = clGreen;
     Node_Range->Pen->Color = clGreen;
     Node_Label->Color = clGreen;
+    Node_Label->Font->Color = clWhite;
 } // End of constructor
 
 

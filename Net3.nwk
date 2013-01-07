@@ -1,5 +1,5 @@
 [Nodes]
-Count=35
+Count=34
 Type0=1
 PosX0=515
 PosY0=274
@@ -102,6 +102,3 @@ PosY32=273
 Type33=2
 PosX33=456
 PosY33=307
-Type34=3
-PosX34=461
-PosY34=331

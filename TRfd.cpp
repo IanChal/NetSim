@@ -62,7 +62,7 @@ void TRfd::CommonConstructor(TComponent * owner)
     Node_Label->Caption = "00";
     Node_Label->Font->Name = "Arial";
     Node_Label->Font->Size = 8;
-    Node_Label->Font->Color = clWhite;
+    Node_Label->Font->Color = clBlack;
     Node_Label->Font->Style = TFontStyles() << fsBold;
     Node_Label->OnMouseDown = formMain->shNodeMouseDown;
     Node_Label->OnMouseMove = formMain->shNodeMouseMove;

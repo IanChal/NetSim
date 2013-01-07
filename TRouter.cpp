@@ -169,20 +169,32 @@ void TRouter::SendDescendantDiscoveryCompleteAck(TRfd * target_node)
 
 void TRouter::HandleJoinMyNetworkAck(TRadioMsg * msg)
 {
-    // A node has accepted our Network Join request, so set it's cluster level
-    SendSetClusterLevelCommand(msg->Sender_Node);
+    // A node has accepted our Network Join request, so set it's cluster level.
+    // Not there's a maximum of 32 children per node!
+    if ( Child_List->Count < 32 )
+    {
+        SendSetClusterLevelCommand(msg->Sender_Node);
+
+        // A node has joined the network as our child, so add it to the list
+        Child_List->Add(msg->Sender_Node);
+        Child_Added = true;
+
+        // Repainting the screen will show the new association
+        msg->Sender_Node->Node_Label->Font->Color = clWhite;
+        Node_Body->Parent->Repaint();
+    }
 } // End of HandleJoinMyNetworkAck
 
 
 void TRouter::HandleSetClusterLevelAck(TRadioMsg * msg)
 {
     // A node has joined the network as our child, so add it to the list
-    Child_List->Add(msg->Sender_Node);
+/*    Child_List->Add(msg->Sender_Node);
     Child_Added = true;
 
     // Repainting the screen will show the new association
     Node_Body->Parent->Repaint();
-
+*/
 } // End of HandleSetClusterLevelAck
 
 
