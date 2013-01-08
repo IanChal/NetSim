@@ -77,7 +77,7 @@ public:
     virtual void SendSetClusterLevelAck(TRfd * target_node);
     virtual void SendDiscoverDescendantsCommand(TRfd * target_node);
     virtual void SendDiscoverDescendantsAck(TRfd * target_node);
-    virtual void SendDescendantDiscoveryCompleteMsg(TRfd * target_node, sint32 count);
+    virtual void SendDescendantDiscoveryCompleteMsg(TRfd * target_node, uint16 count);
     virtual void SendDescendantDiscoveryCompleteAck(TRfd * target_node);
 
     // Message handling methods

@@ -1,7 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-  ClientHeight = 630
+  ClientHeight = 650
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -74,7 +74,7 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
-    Height = 589
+    Height = 609
     Align = alLeft
     BorderWidth = 1
     Columns = <
@@ -106,6 +106,10 @@ object formMain: TformMain
     Top = 64
     object menuFile: TMenuItem
       Caption = 'File'
+      object menuNewNetwork: TMenuItem
+        Caption = 'New Network'
+        OnClick = menuNewNetworkClick
+      end
       object menuLoad: TMenuItem
         Caption = 'Load Network File ...'
         OnClick = menuLoadClick
@@ -130,21 +134,18 @@ object formMain: TformMain
       Caption = 'Network'
       object menuAddRouter: TMenuItem
         Caption = 'Add Router ...'
-      end
-      object menuRemoveRouter: TMenuItem
-        Caption = 'Remove Router'
+        OnClick = btnNewRouterClick
       end
       object menuAddEndDevice: TMenuItem
         Caption = 'Add End Device ...'
-      end
-      object menuRemoveEndDevice: TMenuItem
-        Caption = 'Remove End Device'
+        OnClick = btnNewZedClick
       end
     end
     object menuHelp: TMenuItem
       Caption = 'Help'
       object About1: TMenuItem
         Caption = 'About ...'
+        Enabled = False
       end
     end
   end

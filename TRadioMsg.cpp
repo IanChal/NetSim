@@ -7,7 +7,7 @@
 #include "TRadioMsg.h"
 
 
-TRadioMsg::TRadioMsg(uint32 msg_len)
+TRadioMsg::TRadioMsg(uint16 msg_len)
 {
     Msg_Length = msg_len;
     Msg_Data = new uint8[msg_len];

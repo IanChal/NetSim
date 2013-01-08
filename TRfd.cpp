@@ -245,14 +245,15 @@ void TRfd::SendDiscoverDescendantsAck(TRfd * target_node)
 } // End of SendDiscoverDescendantsAck
 
 
-void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node, sint32 count)
+void TRfd::SendDescendantDiscoveryCompleteMsg(TRfd * target_node, uint16 count)
 {
     // Tell the target node (should be parent) that this node has finished discovering all it's descendants
-    TRadioMsg msg(2);
+    TRadioMsg msg(3);
     msg.Recipient_Node = target_node;
     msg.Sender_Node = this;
     msg.Msg_Data[0] = MT_DESCENDANT_DISCOVERY_DONE_MSG;
-    msg.Msg_Data[1] = count;
+    msg.Msg_Data[1] = (uint8)(count >> 8);
+    msg.Msg_Data[2] = (uint8)count;
     radioManager.TransmitMsg(&msg, this);
 } // End of SendDescendantDiscoveryCompleteMsg
 

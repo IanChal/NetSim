@@ -28,6 +28,10 @@ TformMain *formMain;
 /* Methods of the TformMain class */
 /*--------------------------------*/
 
+/*----------------------*/
+/* Form-related methods */
+/*----------------------*/
+
 __fastcall TformMain::TformMain(TComponent* Owner): TForm(Owner)
 {
 	Node_List = new TList;
@@ -44,6 +48,28 @@ void __fastcall TformMain::FormCreate(TObject * /*Sender*/)
 {
     LoadNetworkConfig(INI_FILENAME);
 } // End of FormCreate
+
+
+void __fastcall TformMain::FormPaint(TObject * /*Sender*/)
+{
+    for ( sint32 i = 0; i < Node_List->Count; i++ )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        if ( node->Parent_Node != NULL )
+        {
+            // Draw a line from the child to the parent to vosualise the relatinoship
+            sint32 child_x = SHAPE_CENTRE_X(node->Node_Body);
+            sint32 child_y = SHAPE_CENTRE_Y(node->Node_Body);
+            sint32 parent_x = SHAPE_CENTRE_X(node->Parent_Node->Node_Body);
+            sint32 parent_y = SHAPE_CENTRE_Y(node->Parent_Node->Node_Body);
+            formMain->Canvas->Pen->Width = 1;
+            formMain->Canvas->Pen->Color = node->Node_Body->Pen->Color;
+            formMain->Canvas->Pen->Style = psDot;
+            formMain->Canvas->MoveTo(child_x, child_y);
+            formMain->Canvas->LineTo(parent_x, parent_y);
+        }
+    } // End of node list scan loop
+} // End of FormPaint
 
 
 void __fastcall TformMain::FormClose(TObject * /*Sender*/, TCloseAction &Action)
@@ -79,6 +105,145 @@ __fastcall TformMain::~TformMain(void)
     delete Node_List;
 } // End of destructor
 
+
+/*--------------------------*/
+/* Menu-item event handlers */
+/*--------------------------*/
+
+void __fastcall TformMain::menuNewNetworkClick(TObject * /*Sender*/)
+{
+    if ( Network_Changed )
+    {
+        AnsiString msg = "Changes to the network configuration have not been changed.\nSave Changes now?";
+        TModalResult result = MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
+        if ( result == mrYes )
+        {
+            menuSave->Click();
+        }
+        else if ( result == mrNo )
+        {
+            Network_Changed = false;
+        }
+    } // End of Network changed check
+
+    if ( ! Network_Changed )
+    {
+        CreateEmptyNetwork();
+    }
+} // End of menuNewNetworkClick
+
+
+void __fastcall TformMain::menuLoadClick(TObject * /*Sender*/)
+{
+    TModalResult result = mrNone;
+
+    if ( !Network_Filename.IsEmpty() && Network_Changed )
+    {
+        AnsiString msg = "Changes to the network configuration have not been changed.\nSave Changes now?";
+        result = MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
+        if ( result == mrYes )
+        {
+            menuSave->Click();
+        }
+    } // End of Network changed check
+
+    if ( (result != mrCancel) && dialogOpen->Execute() )
+    {
+        // Delete all nodes in the list before loading new ones
+        while ( Node_List->Count > 0 )
+        {
+            TRfd * node = (TRfd *)Node_List->First();
+            delete node;
+            Node_List->Delete(0);
+        }
+        Total_Node_Count = 0;
+        LoadNetworkConfig(dialogOpen->FileName);
+        Network_Filename = dialogOpen->FileName;
+        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
+        Network_Changed = false;
+    } // End of ok clicked
+} // End of menuLoadClick
+
+
+void __fastcall TformMain::menuSaveClick(TObject *Sender)
+{
+    if ( Network_Filename.IsEmpty() )
+    {
+        // File does not yet have a name, so prompt for one
+        menuSaveAsClick(Sender);
+    }
+    else
+    {
+        // File already has a name, so use it
+        SaveNetworkConfig(Network_Filename);
+        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
+        Network_Changed = false;
+    }
+} // End of menuSaveClick
+
+
+void __fastcall TformMain::menuSaveAsClick(TObject * Sender)
+{
+    if ( dialogSave->Execute() )
+    {
+        Network_Filename = dialogSave->FileName;
+        menuSaveClick(Sender);
+    } // End of OK button pressed
+} // End of menuSaveAsClick
+
+
+void __fastcall TformMain::menuExitClick(TObject * /*Sender*/)
+{
+    Close();
+} // End of menuExitClick
+
+
+void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
+{
+    TRfd * node = FindNode(menuContextNode->PopupComponent);
+    if ( (node != NULL) && (node != Node_List->First()) )
+    {
+        menuDeleteNode->Enabled = true;
+        menuDummy->Visible = true;
+        if ( node->Parent_Node != NULL )
+        {
+            menuDummy->Caption = "Info: Parent = " + FormatFloat("#00", node->Parent_Node->MAC_Address);
+        }
+        else
+        {
+            menuDummy->Caption = "Info: Parent = <None>";
+        }
+    } // End of null pointer check
+    else
+    {
+        menuDeleteNode->Enabled = false;
+        menuDummy->Visible = false;
+    }
+    menuBar->Visible = menuDummy->Visible;
+} // End of menuContextNodePopup
+
+
+void __fastcall TformMain::menuDeleteNodeClick(TObject */*Sender*/)
+{
+    TRfd * node = FindNode(menuContextNode->PopupComponent);
+
+    // Not allowed to delete the coordinator
+    if ( (node != NULL) && (node != Node_List->First()) )
+    {
+        delete node;
+        Node_List->Remove(node);
+        if ( ! Network_Changed )
+        {
+            Network_Changed = true;
+            Caption = Caption + "*";
+        }
+    } // End of null pointer check
+} // End of menuDeleteNodeClick
+
+
+/*--------------------------------------------*/
+/* Event handlers for other visual components */
+/*--------------------------------------------*/
 
 void __fastcall TformMain::btnClearLogClick(TObject * /*Sender*/)
 {
@@ -126,18 +291,6 @@ void __fastcall TformMain::btnNewZedClick(TObject * /*Sender*/)
 } // End of btnNewZedClick
 
 
-void __fastcall TformMain::cbShowRangeClick(TObject * /*Sender*/)
-{
-    for ( sint32 i = 0; i < Node_List->Count; i++ )
-    {
-        TRfd * node = (TRfd *)Node_List->Items[i];
-        node->DrawNode(node->Node_Body->Left + (node->Node_Body->Width / 2),
-                       node->Node_Body->Top + (node->Node_Body->Height / 2));
-        node->Node_Range->Visible = cbShowRange->Checked;
-    }
-} // End of cbShowRangeClick
-
-
 void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
 {
     if ( Power_Is_On )
@@ -176,7 +329,7 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
             Power_Is_On = true;
             btnPwr->Caption = "Power Off";
 
-            // Start the network build by sending a Deiscover Descendants command from
+            // Start the network build by sending a command from
             // the coordinator to all nodes (that are within transmissino range)
             coord->Retry_Counter = 0;
             coord->SendJoinMyNetworkRequest(MSG_RECIPIENT_ALL_NODES);
@@ -184,24 +337,31 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
     } // End of power is currently off
     btnNewRouter->Enabled = ! Power_Is_On;
     btnNewZed->Enabled = ! Power_Is_On;
+    menuLoad->Enabled = ! Power_Is_On;
+    menuSave->Enabled = ! Power_Is_On;
+    menuSaveAs->Enabled = ! Power_Is_On;
 } // End of btnPwrClick
+
+
+void __fastcall TformMain::cbShowRangeClick(TObject * /*Sender*/)
+{
+    for ( sint32 i = 0; i < Node_List->Count; i++ )
+    {
+        TRfd * node = (TRfd *)Node_List->Items[i];
+        node->DrawNode(node->Node_Body->Left + (node->Node_Body->Width / 2),
+                       node->Node_Body->Top + (node->Node_Body->Height / 2));
+        node->Node_Range->Visible = cbShowRange->Checked;
+    }
+} // End of cbShowRangeClick
 
 
 void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState /*Shift*/, int X, int Y)
 {
     if ( ! Power_Is_On && (Button == mbLeft) )
     {
-        // Find which shape caused the event
-        TRfd * node = NULL;
-        bool found = false;
-        sint32 i = 0;
-        while ( ! found && (i < Node_List->Count) )
-        {
-            node = (TRfd *)Node_List->Items[i++];
-            found = ( (node->Node_Body == Sender) || (node->Node_Label == Sender) );
-        } // End of Node LIst scan loop
-
-        if ( found  )
+        // Find which node is to be moved
+        TRfd * node = FindNode(Sender);
+        if ( node != NULL )
         {
             Node_Being_Dragged = node;
             Drag_Start_X = X;
@@ -210,7 +370,7 @@ void __fastcall TformMain::shNodeMouseDown(TObject *Sender, TMouseButton Button,
             // Show the extent of the node's transmit range
             node->Node_Range->Visible = true;
             node->Node_Range->SendToBack();
-        } // End of Node found in list
+        } // End of null pointer check
     } // End of left-button check
 } // End of shNodeMouseDown
 
@@ -241,6 +401,12 @@ void __fastcall TformMain::shNodeMouseMove(TObject * /*Sender*/, TShiftState /*S
             n->Node_Body->Top = formMain->ClientHeight - n->Node_Body->Height;
         }
         n->DrawNode(n->Node_Body->Left + (n->Node_Body->Width / 2), n->Node_Body->Top + (n->Node_Body->Height / 2));
+
+        if ( ! Network_Changed )
+        {
+            Network_Changed = true;
+            Caption = Caption + "*";
+        }
     } // End of null pointer check
 } // End of shNodeMouseMove
 
@@ -251,112 +417,38 @@ void __fastcall TformMain::shNodeMouseUp(TObject * /*Sender*/, TMouseButton /*Bu
     {
         Node_Being_Dragged->Node_Range->Visible = cbShowRange->Checked;
         Node_Being_Dragged = NULL;
-        if ( ! Network_Changed )
-        {
-            Network_Changed = true;
-            Caption = Caption + "*";
-        }
-    }
+    }   
 } // End of shNodeMouseUp
 
 
-void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
+TRfd * TformMain::FindNode(TObject * sender)
 {
-    sint32 i = FindNodeIndex(menuContextNode->PopupComponent);
-    if ( i > 0 )
-    {
-        TRfd * node = (TRfd *)Node_List->Items[i];
-        menuDeleteNode->Enabled = true;
-        menuDummy->Visible = true;
-        if ( node->Parent_Node != NULL )
-        {
-            menuDummy->Caption = "Info: Parent = " + FormatFloat("#00", node->Parent_Node->MAC_Address);
-        }
-        else
-        {
-            menuDummy->Caption = "Info: Parent = <None>";
-        }
-    }
-    else
-    {
-        menuDeleteNode->Enabled = false;
-        menuDummy->Visible = false;
-    }
-    menuBar->Visible = menuDummy->Visible;
-} // End of menuContextNodePopup
+TRfd * result = NULL;
 
-
-void __fastcall TformMain::menuDeleteNodeClick(TObject */*Sender*/)
-{
-    sint32 i = FindNodeIndex(menuContextNode->PopupComponent);
-    if ( i > 0 )
-    {
-        TRfd * node = (TRfd *)Node_List->Items[i];
-        delete node;
-        Node_List->Delete(i);
-        if ( ! Network_Changed )
-        {
-            Network_Changed = true;
-            Caption = Caption + "*";
-        }
-    }
-} // End of menuDeleteNodeClick
-
-
-sint32 TformMain::FindNodeIndex(TObject * sender)
-{
-    sint32 node_index = -1;
     sint32 i = 0;
-    while ( (node_index < 0) && (i < Node_List->Count) )
+    while ( (result == NULL) && (i < Node_List->Count) )
     {
-        TRfd * node = (TRfd *)Node_List->Items[i];
-        if ( node->Node_Label == sender )
+        TRfd * node = (TRfd *)Node_List->Items[i++];
+        if ( (node->Node_Body == sender) || (node->Node_Label == sender) )
         {
-            node_index = i;
-        }
-        else
-        {
-            i++;
+            result = node;
         }
     } // End of Node List scan loop
 
-    return node_index;
-} // End of FindSender
-
-
-
-void __fastcall TformMain::FormPaint(TObject * /*Sender*/)
-{
-    for ( sint32 i = 0; i < Node_List->Count; i++ )
-    {
-        TRfd * node = (TRfd *)Node_List->Items[i];
-        if ( node->Parent_Node != NULL )
-        {
-            // Draw a line from the child to the parent to vosualise the relatinoship
-            sint32 child_x = SHAPE_CENTRE_X(node->Node_Body);
-            sint32 child_y = SHAPE_CENTRE_Y(node->Node_Body);
-            sint32 parent_x = SHAPE_CENTRE_X(node->Parent_Node->Node_Body);
-            sint32 parent_y = SHAPE_CENTRE_Y(node->Parent_Node->Node_Body);
-            formMain->Canvas->Pen->Width = 1;
-            formMain->Canvas->Pen->Color = node->Node_Body->Pen->Color;
-            formMain->Canvas->Pen->Style = psDot;
-            formMain->Canvas->MoveTo(child_x, child_y);
-            formMain->Canvas->LineTo(parent_x, parent_y);
-        }
-    } // End of node list scan loop
-} // End of FormPaint
+    return result;
+} // End of FindNode
 
 
 void TformMain::LoadNetworkConfig(AnsiString filename)
 {
 TIniFile *ini = new(nothrow) TIniFile(filename);
+bool error = false;
 
     if ( (ini != NULL) && FileExists(ini->FileName) )
     {
         sint32 node_count = ini->ReadInteger(INI_SECTION_NAME, "Count", 0);
-        for ( sint32 i = 0; i < node_count; i++ )
+        for ( sint32 i = 0; ! error && (i < node_count); i++ )
         {
-            TRfd * new_node;
             try
             {
                 TNodeType type = TNodeType(ini->ReadInteger(INI_SECTION_NAME, "Type"+IntToStr(i), NT_UNKNOWN));
@@ -366,70 +458,87 @@ TIniFile *ini = new(nothrow) TIniFile(filename);
                 {
                     case NT_COORDINATOR:
                     {
-                        TCoordinator * c = new TCoordinator(this);
-                        c->Node_Body->Parent = this;
-                        c->Node_Range->Parent = this;
-                        c->Node_Label->Parent = this;
-                        c->DrawNode(x_pos, y_pos);
-                        c->Node_Label->BringToFront();
-                        Node_List->Add(c);
-                        Total_Node_Count++;
+                        if ( i == 0 )
+                        {
+                            TCoordinator * c = new TCoordinator(this);
+                            c->Node_Body->Parent = this;
+                            c->Node_Range->Parent = this;
+                            c->Node_Label->Parent = this;
+                            c->DrawNode(x_pos, y_pos);
+                            c->Node_Label->BringToFront();
+                            Node_List->Add(c);
+                            Total_Node_Count++;
+                        }
+                        else
+                        {
+                            error = true;
+                        }
                         break;
-                    }
+                    } // End of NT_COORDINATOR case
+
 
                     case NT_ROUTER:
                     {
-                        TRouter * r = new TRouter(this);
-                        r->Node_Body->Parent = this;
-                        r->Node_Range->Parent = this;
-                        r->Node_Label->Parent = this;
-                        r->MAC_Address = Total_Node_Count;
-                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-                        r->Node_Label->BringToFront();
-                        r->DrawNode(x_pos, y_pos);
-                        Node_List->Add(r);
-                        Total_Node_Count++;
+                        if ( i > 0 )
+                        {
+                            TRouter * r = new TRouter(this);
+                            r->Node_Body->Parent = this;
+                            r->Node_Range->Parent = this;
+                            r->Node_Label->Parent = this;
+                            r->MAC_Address = Total_Node_Count;
+                            r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+                            r->Node_Label->BringToFront();
+                            r->DrawNode(x_pos, y_pos);
+                            Node_List->Add(r);
+                            Total_Node_Count++;
+                        }
+                        else
+                        {
+                            error = true;
+                        }
                         break;
-                    }
+                    } // End of NT_ROUTER case
+
 
                     case NT_END_DEVICE:
                     {
-                        TRfd * r = new TRfd(this);
-                        r->Node_Body->Parent = this;
-                        r->Node_Range->Parent = this;
-                        r->Node_Label->Parent = this;
-                        r->MAC_Address = Total_Node_Count;
-                        r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
-                        r->Node_Label->BringToFront();
-                        r->DrawNode(x_pos, y_pos);
-                        Node_List->Add(r);
-                        Total_Node_Count++;
+                        if ( i > 0 )
+                        {
+                            TRfd * r = new TRfd(this);
+                            r->Node_Body->Parent = this;
+                            r->Node_Range->Parent = this;
+                            r->Node_Label->Parent = this;
+                            r->MAC_Address = Total_Node_Count;
+                            r->Node_Label->Caption = FormatFloat("00", r->MAC_Address);
+                            r->Node_Label->BringToFront();
+                            r->DrawNode(x_pos, y_pos);
+                            Node_List->Add(r);
+                            Total_Node_Count++;
+                        }
+                        else
+                        {
+                            error = true;
+                        }
                         break;
-                    }
+                    } // End of NT_END_DEVICE case
+
 
                     default:
-                        // Just ignore any erroneous entries
+                        error = true;
                         break;
                 } // End of switch statement
             }
             catch (...)
             {
+                error = true;
             }
         } // End of node list scan loop
         delete ini;
     } // End of ini file checks
 
-    if ( Node_List->Count == 0 )
+    if ( error )
     {
-        // If there's a problem reading the .ini file, just create a coordinator
-    	TCoordinator * c = new TCoordinator(this);
-        c->Node_Body->Parent = this;
-        c->Node_Range->Parent = this;
-        c->Node_Label->Parent = this;
-        c->DrawNode(lvLog->Width + (c->Node_Body->Width / 2), panelTools->Height + (c->Node_Body->Width / 2));
-        c->Node_Label->BringToFront();
-        Node_List->Add(c);
-        Total_Node_Count++;
+        CreateEmptyNetwork();
     } // End of empty Node List check
 } // End of LoadNetworkConfig
 
@@ -456,67 +565,27 @@ TIniFile *ini = new(nothrow) TIniFile(filename);
     } // End of null pointer check
 } // End of SaveNetworkConfig
 
-void __fastcall TformMain::menuExitClick(TObject * /*Sender*/)
+
+void TformMain::CreateEmptyNetwork(void)
 {
-    Close();
-} // End of menuExitClick
-
-
-void __fastcall TformMain::menuLoadClick(TObject * /*Sender*/)
-{
-    TModalResult result = mrNone;
-
-    if ( !Network_Filename.IsEmpty() && Network_Changed )
+    // Delete any existing nodes
+    while ( Node_List->Count > 0 )
     {
-        AnsiString msg = "Changes to the network configuration have not been changed.\nSave Changes now?";
-        result = MessageDlg(msg, mtConfirmation, TMsgDlgButtons() << mbYes << mbNo << mbCancel, 0);
-        if ( result == mrYes )
-        {
-            menuSave->Click();
-        }
-    } // End of Network changed check
-
-    if ( (result != mrCancel) && dialogOpen->Execute() )
-    {
-        // Delete all nodes in the list before loading new ones
-        while ( Node_List->Count > 0 )
-        {
-            TRfd * node = (TRfd *)Node_List->First();
-            delete node;
-            Node_List->Delete(0);
-        }
-        Total_Node_Count = 0;
-        LoadNetworkConfig(dialogOpen->FileName);
-        Network_Filename = dialogOpen->FileName;
-        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
-        Network_Changed = false;
-    } // End of ok clicked
-} // End of menuLoadClick
-
-
-void __fastcall TformMain::menuSaveClick(TObject *Sender)
-{
-    if ( Network_Filename.IsEmpty() )
-    {
-        // File does not yet have a name, so prompt for one
-        menuSaveAsClick(Sender);
+        TRfd * node = (TRfd *)Node_List->First();
+        delete node;
+        Node_List->Delete(0);
     }
-    else
-    {
-        // File already has a name, so use it
-        SaveNetworkConfig(Network_Filename);
-    }
-} // End of menuSaveClick
 
-
-void __fastcall TformMain::menuSaveAsClick(TObject * /*Sender*/)
-{
-    if ( dialogSave->Execute() )
-    {
-        SaveNetworkConfig(dialogSave->FileName);
-        Network_Filename = dialogSave->FileName;
-        formMain->Caption = (AnsiString)APPLICATION_NAME + " - " + Network_Filename;
-        Network_Changed = false;
-    } // End of OK button pressed
-} // End of menuSaveAsClick
+    // All networks must have a single coordinator, so create one now
+    TCoordinator * c = new TCoordinator(this);
+    c->Node_Body->Parent = this;
+    c->Node_Range->Parent = this;
+    c->Node_Label->Parent = this;
+    c->DrawNode( ((formMain->ClientWidth - lvLog->Width) / 2) + lvLog->Width - (c->Node_Body->Width / 2),
+                 ((formMain->ClientHeight - panelTools->Height) / 2) + panelTools->Height - (c->Node_Body->Height / 2));
+    c->Node_Label->BringToFront();
+    Node_List->Add(c);
+    Total_Node_Count = 1;
+    Caption = (AnsiString)APPLICATION_NAME + " - (Unnamed Network)";
+} // End of CreateEmptyNetwork
 

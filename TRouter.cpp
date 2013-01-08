@@ -89,7 +89,7 @@ void __fastcall TRouter::Msg_Timeout_TimerTimer(TObject * /*Sender*/)
                     // There are no more children to discover, so the process is complete
                     if ( Parent_Node != NULL )
                     {
-                        SendDescendantDiscoveryCompleteMsg(Parent_Node, Child_List->Count);
+                        SendDescendantDiscoveryCompleteMsg(Parent_Node, (uint16)Child_List->Count);
                     }
                 }
             } // End of retries expired
@@ -115,7 +115,7 @@ void TRouter::SendJoinMyNetworkRequest(TRfd * target_node)
     msg.Recipient_Node = target_node;
     msg.Sender_Node = this;
     msg.Msg_Data[0] = MT_JOIN_MY_NETWORK_REQ;
-    msg.Msg_Data[1] = Cluster_Level + 1;
+    msg.Msg_Data[1] = (uint8)(Cluster_Level + 1);
     radioManager.TransmitMsg(&msg, this);
 
     // The Join My Network command needs a message timeout
@@ -136,7 +136,7 @@ void TRouter::SendSetClusterLevelCommand(TRfd * target_node)
     msg.Recipient_Node = target_node;
     msg.Sender_Node = this;
     msg.Msg_Data[0] = MT_SET_CLUSTER_LEVEL_CMD;
-    msg.Msg_Data[1] = Cluster_Level + 1;
+    msg.Msg_Data[1] = (uint8)(Cluster_Level + 1);
     radioManager.TransmitMsg(&msg, this);
 } // End of SendSetClusterLevelCommand
 
@@ -178,23 +178,15 @@ void TRouter::HandleJoinMyNetworkAck(TRadioMsg * msg)
         // A node has joined the network as our child, so add it to the list
         Child_List->Add(msg->Sender_Node);
         Child_Added = true;
-
-        // Repainting the screen will show the new association
-        msg->Sender_Node->Node_Label->Font->Color = clWhite;
-        Node_Body->Parent->Repaint();
-    }
+    } // End of child list count
 } // End of HandleJoinMyNetworkAck
 
 
 void TRouter::HandleSetClusterLevelAck(TRadioMsg * msg)
 {
-    // A node has joined the network as our child, so add it to the list
-/*    Child_List->Add(msg->Sender_Node);
-    Child_Added = true;
-
-    // Repainting the screen will show the new association
-    Node_Body->Parent->Repaint();
-*/
+        // Repainting the screen will show the new association
+        msg->Sender_Node->Node_Label->Font->Color = clWhite;
+        Node_Body->Parent->Repaint();
 } // End of HandleSetClusterLevelAck
 
 
@@ -225,7 +217,7 @@ void TRouter::HandleDescendantDiscoveryDoneMsg(TRadioMsg * msg)
         // There are no more children, so our descendant discovery is complete
         if ( Parent_Node != NULL )
         {
-            SendDescendantDiscoveryCompleteMsg(Parent_Node, Child_List->Count);
+            SendDescendantDiscoveryCompleteMsg(Parent_Node, (uint16)Child_List->Count);
         }
     }
 } // End of HandleDescendantDiscoveryDoneMsg

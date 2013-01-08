@@ -6,7 +6,6 @@
 
 #include "TCoordinator.h"
 
-
 #pragma package(smart_init)
 
 
@@ -27,6 +26,9 @@ TCoordinator::TCoordinator(TComponent * owner) : TRouter(owner)
     Node_Range->Pen->Color = clGreen;
     Node_Label->Color = clGreen;
     Node_Label->Font->Color = clWhite;
+
+    // The coordinator does not need a pop-up menu
+    Node_Label->PopupMenu = NULL;
 } // End of constructor
 
 

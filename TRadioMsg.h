@@ -31,11 +31,11 @@ public:
     uint32 Timestamp;
     TRfd * Sender_Node;
     TRfd * Recipient_Node;
-    uint8 Msg_Length;
+    uint16 Msg_Length;
     uint8 * Msg_Data;
 
     // Public Methods
-    TRadioMsg(uint32 msg_len);
+    TRadioMsg(uint16 msg_len);
     ~TRadioMsg(void);
     TRadioMsg(TRadioMsg &ref);
 }; // End of TRadioMsg class definition

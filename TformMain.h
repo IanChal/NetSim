@@ -54,8 +54,6 @@ __published:	// IDE-managed Components
     TMenuItem *menuNetwork;
     TMenuItem *menuAddRouter;
     TMenuItem *menuAddEndDevice;
-    TMenuItem *menuRemoveEndDevice;
-    TMenuItem *menuRemoveRouter;
     TMenuItem *menuHelp;
     TMenuItem *About1;
     TPopupMenu *menuContextNode;
@@ -65,6 +63,7 @@ __published:	// IDE-managed Components
     TSaveDialog *dialogSave;
     TMenuItem *menuDummy;
     TMenuItem *menuBar;
+    TMenuItem *menuNewNetwork;
     void __fastcall btnPwrClick(TObject *Sender);
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
@@ -82,6 +81,7 @@ __published:	// IDE-managed Components
     void __fastcall menuLoadClick(TObject *Sender);
     void __fastcall menuSaveClick(TObject *Sender);
     void __fastcall menuSaveAsClick(TObject *Sender);
+    void __fastcall menuNewNetworkClick(TObject *Sender);
 
 private:
     // Private Data
@@ -96,9 +96,10 @@ private:
     sint32 Drag_Start_Y;
 
 	// Private Methods
-    sint32 FindNodeIndex(TObject * sender);
+    TRfd * FindNode(TObject * sender);
     void LoadNetworkConfig(AnsiString filename);
     void SaveNetworkConfig(AnsiString filename);
+    void CreateEmptyNetwork(void);
 
 public:
 	// Public Data
