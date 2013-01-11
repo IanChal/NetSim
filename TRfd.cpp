@@ -272,7 +272,9 @@ void TRfd::SendDescendantDiscoveryCompleteAck(TRfd * /*target_node*/)
 void TRfd::HandleJoinMyNetworkRequest(TRadioMsg * msg)
 {
     // Check the cluster level to decide whether to join the network
-    if ( msg->Msg_Data[1] < Cluster_Level )
+//    if ( msg->Msg_Data[1] < Cluster_Level )
+    if ( (Cluster_Level == CLUSTER_LEVEL_UNKNOWN) && (msg->Msg_Data[1] < 11) )
+//    if ( (msg->Msg_Data[1] < Cluster_Level) && (msg->Msg_Data[1] < 11) )
     {
         // The cluster level offered is less than the current value (less hops to coordinator),
         // so acknowledge the request. No action is taken at this point in case the sender node

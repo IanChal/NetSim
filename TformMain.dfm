@@ -1,7 +1,11 @@
 object formMain: TformMain
   Left = 0
   Top = 0
+<<<<<<< HEAD
   ClientHeight = 650
+=======
+  ClientHeight = 670
+>>>>>>> Running changes
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -74,7 +78,11 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
+<<<<<<< HEAD
     Height = 609
+=======
+    Height = 629
+>>>>>>> Running changes
     Align = alLeft
     BorderWidth = 1
     Columns = <
@@ -163,6 +171,9 @@ object formMain: TformMain
     object menuDummy: TMenuItem
       Caption = 'Dummy'
     end
+    object menuDummy2: TMenuItem
+      Caption = 'Dummy'
+    end
   end
   object dialogOpen: TOpenDialog
     DefaultExt = '.nwk'
@@ -174,6 +185,7 @@ object formMain: TformMain
   object dialogSave: TSaveDialog
     DefaultExt = '.nwk'
     Filter = 'Network Files (*.nwk)|*.nwk|All Files (*.*)|*.*'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Title = 'Save Network As'
     Left = 352
     Top = 136

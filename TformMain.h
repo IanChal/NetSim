@@ -64,6 +64,10 @@ __published:	// IDE-managed Components
     TMenuItem *menuDummy;
     TMenuItem *menuBar;
     TMenuItem *menuNewNetwork;
+<<<<<<< HEAD
+=======
+    TMenuItem *menuDummy2;
+>>>>>>> Running changes
     void __fastcall btnPwrClick(TObject *Sender);
     void __fastcall shNodeMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
     void __fastcall shNodeMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);

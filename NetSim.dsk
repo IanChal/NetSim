@@ -1,5 +1,9 @@
 [Closed Files]
+<<<<<<< HEAD
 File_0=TSourceModule,'Y:\UTA-1489\Netsim\TCoordinator.cpp',0,1,1,33,31,0,0,,
+=======
+File_0=TSourceModule,'c:\program files\borland\bds\4.0\include\vcl\dstring.h',0,1,45,1,68,0,0,,
+>>>>>>> Running changes
 File_1=TSourceModule,'c:\program files\borland\bds\4.0\source\Win32\vcl\Menus.pas',0,1,1841,1,1878,0,0,,
 File_2=TSourceModule,'Y:\UTA-1489\Netsim\Unit2.cpp',0,1,1,1,1,0,0,,
 File_3=TSourceModule,'Y:\UTA-1489\globals.h',0,1,13,18,45,0,0,,
@@ -8,6 +12,7 @@ File_5=TSourceModule,'Y:\UTA-1489\TRadioManager.cpp',0,1,1,1,12,0,0,,
 File_6=TSourceModule,'Y:\UTA-1489\TRouter.cpp',0,1,1,5,37,0,0,,
 File_7=TSourceModule,'Y:\UTA-1489\TCoordinator.cpp',0,1,1,33,19,0,0,,
 File_8=TSourceModule,'Y:\UTA-1489\TRfd.cpp',0,1,1,30,6,0,0,,
+<<<<<<< HEAD
 File_9=TSourceModule,'Y:\UTA-1489\tdef.h',0,1,1,1,13,0,0,,
 
 [Modules]
@@ -16,6 +21,18 @@ Module1=Y:\UTA-1489\Netsim\TRouter.cpp
 Module2=Y:\UTA-1489\Netsim\TRadioMsg.cpp
 Module3=Y:\UTA-1489\Netsim\TformMain.cpp
 Count=4
+=======
+
+[Modules]
+Module0=Y:\UTA-1489\Netsim\TformMain.cpp
+Module1=Y:\UTA-1489\Netsim\TCoordinator.cpp
+Module2=Y:\UTA-1489\Netsim\TRouter.cpp
+Module3=Y:\UTA-1489\Netsim\globals.h
+Module4=Y:\UTA-1489\Netsim\TRfd.cpp
+Module5=default.htm
+Module6=Y:\UTA-1489\Netsim\TRadioMsg.cpp
+Count=7
+>>>>>>> Running changes
 EditWindowCount=1
 
 [Y:\UTA-1489\Netsim\TRfd.cpp]
@@ -23,16 +40,21 @@ ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[Y:\UTA-1489\Netsim\TRouter.cpp]
+[Y:\UTA-1489\Netsim\TCoordinator.cpp]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+<<<<<<< HEAD
 [Y:\UTA-1489\Netsim\TRadioMsg.cpp]
+=======
+[Y:\UTA-1489\Netsim\TRouter.cpp]
+>>>>>>> Running changes
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
+<<<<<<< HEAD
 [Y:\UTA-1489\Netsim\TformMain.cpp]
 ModuleType=TSourceModule
 FormState=1
@@ -41,17 +63,47 @@ FormOnTop=0
 [EditWindow0]
 ViewCount=4
 CurrentEditView=Y:\UTA-1489\Netsim\TRfd.cpp
+=======
+[Y:\UTA-1489\Netsim\globals.h]
+ModuleType=TSourceModule
+
+[Y:\UTA-1489\Netsim\TRfd.cpp]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[default.htm]
+ModuleType=TURLModule
+
+[Y:\UTA-1489\Netsim\TRadioMsg.cpp]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
+
+[EditWindow0]
+ViewCount=8
+CurrentEditView=Y:\UTA-1489\Netsim\TformMain.cpp
+>>>>>>> Running changes
 View0=0
 View1=1
 View2=2
 View3=3
+View4=4
+View5=5
+View6=6
+View7=7
 PercentageSizes=1
 Create=1
 Visible=1
 Docked=0
 State=0
+<<<<<<< HEAD
 Left=1448
 Top=915
+=======
+Left=1521
+Top=744
+>>>>>>> Running changes
 Width=7484
 Height=9000
 MaxLeft=0
@@ -66,43 +118,98 @@ LeftPanelSize=0
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
+<<<<<<< HEAD
 BottomPanelData=000008000102010000000B0000004D65737361676556696577842E000000000000023806000000000000FFFFFFFF
+=======
+BottomPanelData=000008000100010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+>>>>>>> Running changes
 BottomMiddlePanelSize=0
 
 [View0]
+CustomEditViewType=TWelcomePageView
+WelcomePageURL=bds:/default.htm
+
+[View1]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TformMain.cpp
 CursorX=1
+<<<<<<< HEAD
 CursorY=452
 TopLine=436
+=======
+CursorY=49
+TopLine=47
+>>>>>>> Running changes
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=Y:\UTA-1489\Netsim\TformMain.cpp
 
-[View1]
+[View2]
+CustomEditViewType=TEditView
+Module=Y:\UTA-1489\Netsim\globals.h
+CursorX=29
+CursorY=49
+TopLine=24
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Y:\UTA-1489\Netsim\globals.h
+
+[View3]
+CustomEditViewType=TDisassemblyEditView
+DumpPane=79
+DisassemblyPane=187
+RegisterPane=231
+FlagPane=64
+
+[View4]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TRfd.cpp
+<<<<<<< HEAD
 CursorX=35
 CursorY=256
 TopLine=224
+=======
+CursorX=1
+CursorY=86
+TopLine=49
+>>>>>>> Running changes
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=Y:\UTA-1489\Netsim\TRfd.cpp
 
-[View2]
+[View5]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TRouter.cpp
-CursorX=69
-CursorY=220
-TopLine=198
+CursorX=1
+CursorY=20
+TopLine=14
 LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=Y:\UTA-1489\Netsim\TRouter.cpp
 
-[View3]
+[View6]
+CustomEditViewType=TEditView
+<<<<<<< HEAD
+Module=Y:\UTA-1489\Netsim\TRouter.cpp
+CursorX=69
+CursorY=220
+TopLine=198
+=======
+Module=Y:\UTA-1489\Netsim\TCoordinator.cpp
+CursorX=1
+CursorY=16
+TopLine=1
+>>>>>>> Running changes
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Y:\UTA-1489\Netsim\TRouter.cpp
+
+[View7]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TRadioMsg.cpp
 CursorX=2
@@ -157,7 +264,7 @@ MaxLeft=-5
 MaxTop=-9
 ClientWidth=9958
 ClientHeight=444
-BottomPanelSize=417
+BottomPanelSize=0
 
 [ProjectManager]
 PercentageSizes=1
@@ -455,6 +562,7 @@ Docked=1
 State=0
 Left=0
 Top=23
+<<<<<<< HEAD
 Width=2307
 Height=1436
 MaxLeft=-1
@@ -462,6 +570,15 @@ MaxTop=-1
 ClientWidth=2307
 ClientHeight=1436
 TBDockHeight=1436
+=======
+Width=7443
+Height=1103
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=7443
+ClientHeight=1103
+TBDockHeight=1103
+>>>>>>> Running changes
 LRDockWidth=2307
 Dockable=1
 StayOnTop=0

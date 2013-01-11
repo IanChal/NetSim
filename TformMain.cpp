@@ -99,7 +99,20 @@ __fastcall TformMain::~TformMain(void)
     while ( Node_List->Count > 0 )
     {
         TRfd * node = (TRfd *)Node_List->First();
-        delete node;
+        if ( node->Node_Type == NT_COORDINATOR )
+        {
+            TCoordinator * coord = (TCoordinator *)node;
+            delete coord;
+        }
+        else if ( node->Node_Type == NT_ROUTER )
+        {
+            TRouter * router = (TRouter *)node;
+            delete router;
+        }
+        else
+        {
+            delete node;
+        }
         Node_List->Delete(0);
     }
     delete Node_List;
@@ -208,16 +221,29 @@ void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
         if ( node->Parent_Node != NULL )
         {
             menuDummy->Caption = "Info: Parent = " + FormatFloat("#00", node->Parent_Node->MAC_Address);
+<<<<<<< HEAD
+=======
+            menuDummy2->Caption = "Info: Level = " + IntToStr(node->Cluster_Level);
+            menuDummy2->Visible = true;
+>>>>>>> Running changes
         }
         else
         {
             menuDummy->Caption = "Info: Parent = <None>";
+<<<<<<< HEAD
+=======
+            menuDummy2->Visible = false;
+>>>>>>> Running changes
         }
     } // End of null pointer check
     else
     {
         menuDeleteNode->Enabled = false;
         menuDummy->Visible = false;
+<<<<<<< HEAD
+=======
+        menuDummy2->Visible = false;
+>>>>>>> Running changes
     }
     menuBar->Visible = menuDummy->Visible;
 } // End of menuContextNodePopup
