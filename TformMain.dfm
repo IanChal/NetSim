@@ -1,11 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-<<<<<<< HEAD
-  ClientHeight = 650
-=======
   ClientHeight = 670
->>>>>>> Running changes
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -78,11 +74,7 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
-<<<<<<< HEAD
-    Height = 609
-=======
     Height = 629
->>>>>>> Running changes
     Align = alLeft
     BorderWidth = 1
     Columns = <
