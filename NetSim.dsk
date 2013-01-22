@@ -1,22 +1,22 @@
 [Closed Files]
-File_0=TSourceModule,'c:\program files\borland\bds\4.0\include\vcl\dstring.h',0,1,45,1,68,0,0,,
+File_0=TSourceModule,'c:\program files\borland\bds\4.0\source\Win32\rtl\sys\system.pas',0,1,9675,1,9698,0,0,,
 File_1=TSourceModule,'c:\program files\borland\bds\4.0\include\vcl\dstring.h',0,1,45,1,68,0,0,,
-File_2=TSourceModule,'c:\program files\borland\bds\4.0\source\Win32\vcl\Menus.pas',0,1,1841,1,1878,0,0,,
-File_3=TSourceModule,'Y:\UTA-1489\Netsim\Unit2.cpp',0,1,1,1,1,0,0,,
-File_4=TSourceModule,'Y:\UTA-1489\globals.h',0,1,13,18,45,0,0,,
-File_5=TSourceModule,'Y:\UTA-1489\TformMain.cpp',0,1,58,37,62,0,0,,
-File_6=TSourceModule,'Y:\UTA-1489\TRadioManager.cpp',0,1,1,1,12,0,0,,
-File_7=TSourceModule,'Y:\UTA-1489\TRouter.cpp',0,1,1,5,37,0,0,,
-File_8=TSourceModule,'Y:\UTA-1489\TCoordinator.cpp',0,1,1,33,19,0,0,,
-File_9=TSourceModule,'Y:\UTA-1489\tdef.h',0,1,1,1,13,0,0,,
+File_2=TSourceModule,'c:\program files\borland\bds\4.0\include\vcl\dstring.h',0,1,45,1,68,0,0,,
+File_3=TSourceModule,'c:\program files\borland\bds\4.0\source\Win32\vcl\Menus.pas',0,1,1841,1,1878,0,0,,
+File_4=TSourceModule,'Y:\UTA-1489\Netsim\Unit2.cpp',0,1,1,1,1,0,0,,
+File_5=TSourceModule,'Y:\UTA-1489\globals.h',0,1,13,18,45,0,0,,
+File_6=TSourceModule,'Y:\UTA-1489\TformMain.cpp',0,1,58,37,62,0,0,,
+File_7=TSourceModule,'Y:\UTA-1489\TRadioManager.cpp',0,1,1,1,12,0,0,,
+File_8=TSourceModule,'Y:\UTA-1489\TRouter.cpp',0,1,1,5,37,0,0,,
+File_9=TSourceModule,'Y:\UTA-1489\TCoordinator.cpp',0,1,1,33,19,0,0,,
 
 [Modules]
 Module0=Y:\UTA-1489\Netsim\TformMain.cpp
-Module1=Y:\UTA-1489\Netsim\NetSim.bdsproj
+Module1=Y:\UTA-1489\Netsim\TCoordinator.cpp
 Module2=Y:\UTA-1489\Netsim\TRouter.cpp
-Module3=Y:\UTA-1489\Netsim\globals.h
-Module4=Y:\UTA-1489\Netsim\TRfd.cpp
-Module5=Y:\UTA-1489\Netsim\TCoordinator.cpp
+Module3=Y:\UTA-1489\Netsim\TRfd.cpp
+Module4=Y:\UTA-1489\Netsim\NetSim.bdsproj
+Module5=Y:\UTA-1489\Netsim\globals.h
 Module6=Y:\UTA-1489\Netsim\TRadioMsg.cpp
 Count=7
 EditWindowCount=1
@@ -26,26 +26,26 @@ ModuleType=TSourceModule
 FormState=1
 FormOnTop=0
 
-[Y:\UTA-1489\Netsim\NetSim.bdsproj]
-ModuleType=TBaseProject
+[Y:\UTA-1489\Netsim\TCoordinator.cpp]
+ModuleType=TSourceModule
+FormState=0
+FormOnTop=0
 
 [Y:\UTA-1489\Netsim\TRouter.cpp]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[Y:\UTA-1489\Netsim\globals.h]
-ModuleType=TSourceModule
-
 [Y:\UTA-1489\Netsim\TRfd.cpp]
 ModuleType=TSourceModule
 FormState=0
 FormOnTop=0
 
-[Y:\UTA-1489\Netsim\TCoordinator.cpp]
+[Y:\UTA-1489\Netsim\NetSim.bdsproj]
+ModuleType=TBaseProject
+
+[Y:\UTA-1489\Netsim\globals.h]
 ModuleType=TSourceModule
-FormState=0
-FormOnTop=0
 
 [Y:\UTA-1489\Netsim\TRadioMsg.cpp]
 ModuleType=TSourceModule
@@ -81,17 +81,17 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=0
 RightPanelSize=0
-BottomPanelSize=0
+BottomPanelSize=1267
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=000008000100010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000800010200000000842E00000000000002F3040000000000000100000000842E00000B0000004D65737361676556696577FFFFFFFF
 BottomMiddlePanelSize=0
 
 [View0]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TformMain.cpp
-CursorX=48
-CursorY=219
-TopLine=204
+CursorX=44
+CursorY=357
+TopLine=325
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -122,9 +122,9 @@ EditViewName=Y:\UTA-1489\Netsim\NetSim.cpp
 [View3]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TRfd.cpp
-CursorX=1
-CursorY=86
-TopLine=1
+CursorX=35
+CursorY=68
+TopLine=30
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -133,9 +133,9 @@ EditViewName=Y:\UTA-1489\Netsim\TRfd.cpp
 [View4]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TRouter.cpp
-CursorX=1
-CursorY=212
-TopLine=189
+CursorX=53
+CursorY=18
+TopLine=2
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -144,7 +144,7 @@ EditViewName=Y:\UTA-1489\Netsim\TRouter.cpp
 [View5]
 CustomEditViewType=TEditView
 Module=Y:\UTA-1489\Netsim\TCoordinator.cpp
-CursorX=1
+CursorX=52
 CursorY=16
 TopLine=1
 LeftCol=1
@@ -207,7 +207,7 @@ MaxLeft=-5
 MaxTop=-9
 ClientWidth=9958
 ClientHeight=444
-BottomPanelSize=0
+BottomPanelSize=417
 
 [ProjectManager]
 PercentageSizes=1
@@ -500,18 +500,18 @@ StayOnTop=0
 [MessageView@EditWindow0]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
 Left=0
 Top=23
 Width=7443
-Height=1162
+Height=1103
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=7443
-ClientHeight=1162
-TBDockHeight=1162
+ClientHeight=1103
+TBDockHeight=1103
 LRDockWidth=2307
 Dockable=1
 StayOnTop=0

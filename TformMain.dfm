@@ -1,7 +1,7 @@
 object formMain: TformMain
   Left = 0
   Top = 0
-  ClientHeight = 670
+  ClientHeight = 690
   ClientWidth = 1025
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -74,7 +74,7 @@ object formMain: TformMain
     Left = 0
     Top = 41
     Width = 177
-    Height = 629
+    Height = 649
     Align = alLeft
     BorderWidth = 1
     Columns = <
@@ -100,6 +100,7 @@ object formMain: TformMain
     ParentFont = False
     TabOrder = 1
     ViewStyle = vsReport
+    ExplicitHeight = 629
   end
   object menuMain: TMainMenu
     Left = 232

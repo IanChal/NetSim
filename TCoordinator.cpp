@@ -9,6 +9,13 @@
 #pragma package(smart_init)
 
 
+/*-------------------*/
+/* Macro Definitions */
+/*-------------------*/
+
+#define COORDINATOR_COLOUR                  (clBlue)
+
+
 /*-----------------------------------*/
 /* Methods of the TCoordinator class */
 /*-----------------------------------*/
@@ -21,10 +28,10 @@ TCoordinator::TCoordinator(TComponent * owner) : TRouter(owner)
     Tx_Range = 100;
 
     // Visual Stuff
-    Node_Body->Pen->Color = clGreen;
-    Node_Body->Brush->Color = clGreen;
-    Node_Range->Pen->Color = clGreen;
-    Node_Label->Color = clGreen;
+    Node_Body->Pen->Color = COORDINATOR_COLOUR;
+    Node_Body->Brush->Color = COORDINATOR_COLOUR;
+    Node_Range->Pen->Color = COORDINATOR_COLOUR;
+    Node_Label->Color = COORDINATOR_COLOUR;
     Node_Label->Font->Color = clWhite;
 
     // The coordinator does not need a pop-up menu

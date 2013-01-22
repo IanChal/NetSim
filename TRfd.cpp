@@ -17,6 +17,13 @@
 #pragma package(smart_init)
 
 
+/*-------------------*/
+/* Macro Definitions */
+/*-------------------*/
+
+#define RFD_COLOUR                          (clRed)
+
+
 /*---------------------------*/
 /* Methods of the TRfd class */
 /*---------------------------*/
@@ -43,8 +50,8 @@ void TRfd::CommonConstructor(TComponent * owner)
     Node_Body->Shape = stCircle;
     Node_Body->Width = DEFAULT_NODE_SIZE;
     Node_Body->Height = DEFAULT_NODE_SIZE;
-    Node_Body->Pen->Color = clRed;
-    Node_Body->Brush->Color = clRed;
+    Node_Body->Pen->Color = RFD_COLOUR;
+    Node_Body->Brush->Color = RFD_COLOUR;
     Node_Body->OnMouseDown = formMain->shNodeMouseDown;
     Node_Body->OnMouseMove = formMain->shNodeMouseMove;
     Node_Body->OnMouseUp = formMain->shNodeMouseUp;
@@ -52,13 +59,13 @@ void TRfd::CommonConstructor(TComponent * owner)
     Node_Range = new TShape(owner);
     Node_Range->Shape = stCircle;
     Node_Range->Brush->Style = bsClear;
-    Node_Range->Pen->Color = clRed;
+    Node_Range->Pen->Color = RFD_COLOUR;
     Node_Range->Width = Tx_Range * 2;
     Node_Range->Height = Tx_Range * 2;
     Node_Range->Visible = false;
 
     Node_Label = new TLabel(owner);
-    Node_Label->Color = clRed;
+    Node_Label->Color = RFD_COLOUR;
     Node_Label->Caption = "00";
     Node_Label->Font->Name = "Arial";
     Node_Label->Font->Size = 8;

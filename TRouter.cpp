@@ -11,6 +11,13 @@
 #pragma package(smart_init)
 
 
+/*-------------------*/
+/* Macro Definitions */
+/*-------------------*/
+
+#define ROUTER_COLOUR                       (clGreen)
+
+
 /*------------------------------*/
 /* Methods of the TRouter class */
 /*------------------------------*/
@@ -28,10 +35,10 @@ void TRouter::CommonConstructorTasks(TComponent * /*owner*/)
     Msg_Timeout_Timer->OnTimer = Msg_Timeout_TimerTimer;
 
     // Visual Stuff
-    Node_Body->Pen->Color = clBlue;
-    Node_Body->Brush->Color = clBlue;
-    Node_Range->Pen->Color = clBlue;
-    Node_Label->Color = clBlue;
+    Node_Body->Pen->Color = ROUTER_COLOUR;
+    Node_Body->Brush->Color = ROUTER_COLOUR;
+    Node_Range->Pen->Color = ROUTER_COLOUR;
+    Node_Label->Color = ROUTER_COLOUR;
 
     // Initialise the child list
     Child_List = new TList;

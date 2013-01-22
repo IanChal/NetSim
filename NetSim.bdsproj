@@ -132,7 +132,7 @@
           <property category="win32.*.win32b.bcc32" name="option.tWD.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.tWM.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.v4.enabled" value="1"/>
-          <property category="win32.*.win32b.bcc32" name="option.vG.enabled" value="1"/>
+          <property category="win32.*.win32b.bcc32" name="option.vG.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.w.enabled" value="0"/>
           <property category="win32.*.win32b.bcc32" name="option.wali.enabled" value="1"/>
           <property category="win32.*.win32b.bcc32" name="option.wamb.enabled" value="1"/>

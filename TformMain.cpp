@@ -216,7 +216,7 @@ void __fastcall TformMain::menuContextNodePopup(TObject * /*Sender*/)
     TRfd * node = FindNode(menuContextNode->PopupComponent);
     if ( (node != NULL) && (node != Node_List->First()) )
     {
-        menuDeleteNode->Enabled = ! Power_Is_On;
+        menuDeleteNode->Enabled = true;
         menuDummy->Visible = true;
         if ( node->Parent_Node != NULL )
         {
@@ -354,6 +354,7 @@ void __fastcall TformMain::btnPwrClick(TObject * /*Sender*/)
     } // End of power is currently off
     btnNewRouter->Enabled = ! Power_Is_On;
     btnNewZed->Enabled = ! Power_Is_On;
+    menuNewNetwork->Enabled =  Power_Is_On;
     menuLoad->Enabled = ! Power_Is_On;
     menuSave->Enabled = ! Power_Is_On;
     menuSaveAs->Enabled = ! Power_Is_On;
